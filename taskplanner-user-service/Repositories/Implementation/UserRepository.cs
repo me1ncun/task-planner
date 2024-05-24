@@ -17,6 +17,13 @@ public class UserRepository: IUserRepository
     
     public async Task Add(string email, string password)
     {
+        var existingUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+    
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("A user with this email already exists");
+        }
+        
         var user = new User
         {
             Email = email,
@@ -33,4 +40,6 @@ public class UserRepository: IUserRepository
         
         return user;
     }
+    
+    
 }
