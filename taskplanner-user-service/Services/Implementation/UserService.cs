@@ -1,6 +1,9 @@
-﻿using taskplanner_user_service.Helpers;
+﻿using System.Security.Claims;
+using taskplanner_user_service.Helpers;
+using taskplanner_user_service.Models;
 using taskplanner_user_service.Repositories.Interfaces;
 using taskplanner_user_service.Services.Interfaces;
+using Task = System.Threading.Tasks.Task;
 
 namespace taskplanner_user_service.Services.Implementation;
 
@@ -14,7 +17,6 @@ public class UserService: IUserService
         _userRepository = userRepository;
         _jwtProvider = jwtProvider;
     }
-    
     public async Task Register(string email, string password)
     {
         var hashedPassword = HashPasswordHelper.HashPassword(password);
@@ -30,11 +32,12 @@ public class UserService: IUserService
         
         if(result == false)
         {
-            throw new Exception("Failed to login");
+            throw new InvalidOperationException("Failed to login");
         }
         
         var token = _jwtProvider.GenerateToken(user);
         
         return token;
     }
+    
 }
