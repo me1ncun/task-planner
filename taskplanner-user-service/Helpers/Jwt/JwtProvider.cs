@@ -19,7 +19,7 @@ public class JwtProvider
     
     public string GenerateToken(User user)
     {
-        Claim[] claims = [new("userId", user.Id.ToString()), new("email", user.Email)];
+        Claim[] claims = [new("userId", user.Id.ToString()), new("userEmail", user.Email)];
         
         var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)), SecurityAlgorithms.HmacSha256Signature);
 
