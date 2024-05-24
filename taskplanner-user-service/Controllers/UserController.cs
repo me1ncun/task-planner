@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.Contracts;
+using taskplanner_user_service.DTO;
+using taskplanner_user_service.Models;
 using taskplanner_user_service.Services.Interfaces;
 
 namespace taskplanner_user_service.Controllers
@@ -18,23 +22,80 @@ namespace taskplanner_user_service.Controllers
             _context = context;
         }
         
-        [HttpPost("register")]
-        public async Task<IResult> Register(RegisterUserRequest request)
+        [HttpPost("/user")]
+        public async Task<IActionResult> Register(RegisterUserRequest request)
         {
-           await _userService.Register(request.Email, request.Password);
-           
-           return Results.Ok();
+            if (request == null)
+            {
+                return BadRequest("Invalid request.");
+            }
+            
+            try
+            {
+                await _userService.Register(request.Email, request.Password);
+
+                var token = await _userService.Login(request.Email, request.Password);
+                _context.HttpContext.Response.Cookies.Append("token", token);
+
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
         
         /*[Authorize]*/
-        [HttpPost("login")]
-        public async Task<IResult> Login(LoginUserRequest request)
+        [HttpPost("/auth/login")]
+        public async Task<IActionResult> Login(LoginUserRequest request)
         {
-            var token = await _userService.Login(request.Email, request.Password);
+            if(request == null)
+            {
+                return BadRequest("Invalid request.");
+            }
             
-            _context.HttpContext.Response.Cookies.Append("token", token);
+            try
+            {
+                var token = await _userService.Login(request.Email, request.Password);
+                _context.HttpContext.Response.Cookies.Append("token", token);
+                
+                return Ok(token);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { message = ex.Message });
+            }
+        }
+        
+        [Authorize]
+        [HttpGet("/user")]
+        public async Task<IActionResult> GetUser()
+        {
+            var token = _context.HttpContext.Request.Cookies["token"];
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized(new { message = "User is not authorized." });
+            }
+
+            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId")?.Value;
+            var userEmailClaim = User.Claims.FirstOrDefault(x => x.Type == "userEmail")?.Value;
+
+            var user = new UserDTO
+            {
+                Id = Int32.Parse(userIdClaim),
+                Email = userEmailClaim
+            };
             
-            return Results.Ok(token);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Invalid or expired token." });
+            }
+            
+            return Ok(user);
         }
     }
 }
