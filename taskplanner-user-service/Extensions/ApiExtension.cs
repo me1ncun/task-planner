@@ -7,7 +7,6 @@ namespace taskplanner_user_service.Extensions;
 
 public static class ApiExtension
 {
-    
     public static void AddApiAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
