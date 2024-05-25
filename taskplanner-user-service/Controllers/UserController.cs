@@ -25,16 +25,11 @@ namespace taskplanner_user_service.Controllers
         [HttpPost("/user")]
         public async Task<IActionResult> Register(RegisterUserRequest request)
         {
-            if (request == null)
-            {
-                return BadRequest("Invalid request.");
-            }
-            
             try
             {
                 await _userService.Register(request.Email, request.Password);
 
-                var token = await _userService.Login(request.Email, request.Password);
+                var token = await _userService.Login(request.Email, request.Password, request.Password);
                 _context.HttpContext.Response.Cookies.Append("token", token);
 
                 return Ok();
@@ -49,38 +44,10 @@ namespace taskplanner_user_service.Controllers
             }
         }
         
-        /*[Authorize]*/
-        [HttpPost("/auth/login")]
-        public async Task<IActionResult> Login(LoginUserRequest request)
-        {
-            if(request == null)
-            {
-                return BadRequest("Invalid request.");
-            }
-            
-            try
-            {
-                var token = await _userService.Login(request.Email, request.Password);
-                _context.HttpContext.Response.Cookies.Append("token", token);
-                
-                return Ok(token);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return StatusCode(StatusCodes.Status401Unauthorized, new { message = ex.Message });
-            }
-        }
-        
         [Authorize]
         [HttpGet("/user")]
         public async Task<IActionResult> GetUser()
         {
-            var token = _context.HttpContext.Request.Cookies["token"];
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized(new { message = "User is not authorized." });
-            }
-
             var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId")?.Value;
             var userEmailClaim = User.Claims.FirstOrDefault(x => x.Type == "userEmail")?.Value;
 
@@ -92,7 +59,7 @@ namespace taskplanner_user_service.Controllers
             
             if (user == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Invalid or expired token." });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Invalid or expired token." });
             }
             
             return Ok(user);

@@ -24,8 +24,13 @@ public class UserService: IUserService
         await _userRepository.Add(email, hashedPassword);
     }
     
-    public async Task<string> Login(string email, string password)
+    public async Task<string> Login(string email, string password, string repeatedPassword)
     {
+        if(password != repeatedPassword)
+        {
+            throw new InvalidOperationException("Passwords do not match");
+        }
+        
         var user = await _userRepository.GetByEmail(email);
         
         var result = HashPasswordHelper.VerifyPassword(password, user.Password);
