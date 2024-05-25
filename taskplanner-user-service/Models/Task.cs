@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace taskplanner_user_service.Models;
 
@@ -17,7 +18,6 @@ public class Task
     [Column("user_id")]
     [ForeignKey("User")]
     public int UserId { get; set; }
-    public User User { get; set; }
     [Column("done_at")]
     public DateTime DoneAt { get; set; }
 }
