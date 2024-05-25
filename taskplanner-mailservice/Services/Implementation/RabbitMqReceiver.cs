@@ -2,53 +2,48 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using taskplanner_mailservice.Models;
 using taskplanner_mailservice.Services.Interfaces;
 
 namespace taskplanner_mailservice.Services.Implementation;
 
-public class RabbitMQReceiver: BackgroundService
+public class RabbitMqService : IRabbitMqService
 {
-    private readonly IConnection _connection;
-    private readonly IModel _channel;
-    private readonly IEmailSenderService _emailService;
-
-    public RabbitMQReceiver(IOptions<RabbitMQSettings> rabbitMqSettings, IEmailSenderService emailService)
+    private readonly RabbitMqSettings _rabbitMQSettings;
+    
+    public RabbitMqService(IOptions<RabbitMqSettings> rabbitMQSettings)
     {
-        var factory = new ConnectionFactory()
-        {
-            HostName = rabbitMqSettings.Value.Host,
-            UserName = rabbitMqSettings.Value.UserName,
-            Password = rabbitMqSettings.Value.Password
-        };
-
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _channel.QueueDeclare(queue: rabbitMqSettings.Value.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-        _emailService = emailService;
+        _rabbitMQSettings = rabbitMQSettings.Value;
+    }
+    
+    public void SendMessage(object obj)
+    {
+        var message = JsonSerializer.Serialize(obj);
+        SendMessage(message);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public void SendMessage(string message)
     {
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += async (model, ea) =>
+        // Не забудьте вынести значения "localhost" и "MyQueue"
+        // в файл конфигурации
+        var factory = new ConnectionFactory() { HostName = _rabbitMQSettings.Host, Port = _rabbitMQSettings.Port };
+        factory.UserName = _rabbitMQSettings.UserName;
+        factory.Password = _rabbitMQSettings.Password;
+        using (var connection = factory.CreateConnection())
+        using (var channel = connection.CreateModel())
         {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
-            var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
-            await _emailService.SendEmailAsync(emailMessage);
-        };
-        _channel.BasicConsume(queue: "EMAIL_SENDING_TASKS", autoAck: true, consumer: consumer);
+            channel.QueueDeclare(queue: _rabbitMQSettings.QueueName,
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
 
-        return Task.CompletedTask;
-    }
+            var body = Encoding.UTF8.GetBytes(message);
 
-    public override void Dispose()
-    {
-        _channel.Close();
-        _connection.Close();
-        base.Dispose();
+            channel.BasicPublish(exchange: "",
+                routingKey: _rabbitMQSettings.QueueName,
+                basicProperties: null,
+                body: body);
+        }
     }
 }

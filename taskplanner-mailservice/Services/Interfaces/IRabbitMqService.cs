@@ -1,6 +1,7 @@
 ﻿namespace taskplanner_mailservice.Services.Interfaces;
 
-public class IRabbitMqService
+public interface IRabbitMqService
 {
-    
+    void SendMessage(object obj);
+    void SendMessage(string message);
 }

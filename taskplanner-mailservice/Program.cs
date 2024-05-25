@@ -1,3 +1,4 @@
+using taskplanner_mailservice.Models;
 using taskplanner_mailservice.Services.Implementation;
 using taskplanner_mailservice.Services.Interfaces;
 
@@ -10,6 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<IRabbitMqService, RabbitMqService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
 
 var app = builder.Build();
 
