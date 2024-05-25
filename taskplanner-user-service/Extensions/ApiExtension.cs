@@ -9,7 +9,7 @@ public static class ApiExtension
 {
     public static void AddApiAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -25,7 +25,6 @@ public static class ApiExtension
                 OnMessageReceived = context =>
                 {
                     context.Token = context.Request.Cookies["token"];
-                     
                     return Task.CompletedTask;
                 }
             };
