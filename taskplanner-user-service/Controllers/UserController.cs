@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.Contracts;
 using taskplanner_user_service.DTO;
 using taskplanner_user_service.Models;
+using taskplanner_user_service.Services.Implementation;
 using taskplanner_user_service.Services.Interfaces;
 
 namespace taskplanner_user_service.Controllers
@@ -15,11 +16,13 @@ namespace taskplanner_user_service.Controllers
     {
         private readonly IUserService _userService;
         private readonly IHttpContextAccessor  _context;
+        private readonly RabbitMqService _mqService;
         
-        public UserController(IUserService userService, IHttpContextAccessor  context)
+        public UserController(IUserService userService, IHttpContextAccessor  context, RabbitMqService mqService)
         {
             _userService = userService;
             _context = context;
+            _mqService = mqService;
         }
         
         [HttpPost("/user")]
@@ -31,6 +34,10 @@ namespace taskplanner_user_service.Controllers
 
                 var token = await _userService.Login(request.Email, request.Password, request.Password);
                 _context.HttpContext.Response.Cookies.Append("token", token);
+                
+                var greetingMessage = _mqService.CreateEmailMessage(request);
+            
+                _mqService.SendMessage(greetingMessage);
 
                 return Ok();
             }
