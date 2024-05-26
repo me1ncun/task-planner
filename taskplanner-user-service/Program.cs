@@ -40,6 +40,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddScoped<RabbitMqService>();
 
 builder.Services.AddScoped<JwtProvider>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
