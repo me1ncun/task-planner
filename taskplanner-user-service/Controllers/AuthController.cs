@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.Contracts;
+using taskplanner_user_service.Services.Implementation;
 using taskplanner_user_service.Services.Interfaces;
 
 namespace taskplanner_user_service.Controllers;
@@ -25,7 +27,7 @@ public class AuthController: Controller
         {
             var token = await _userService.Login(request.Email, request.Password, request.RepeatPassword);
             _context.HttpContext.Response.Cookies.Append("token", token);
-                
+            
             return Ok();
         }
         catch (InvalidOperationException ex)
