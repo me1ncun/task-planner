@@ -10,6 +10,5 @@ public class TaskRequest
     public string Description { get; set; }
     [Required]
     public string Status { get; set; }
-    [Required]
     public DateTime DoneAt { get; set; }
 }
