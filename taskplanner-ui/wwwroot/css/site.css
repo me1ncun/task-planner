@@ -1,0 +1,166 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+header {
+    opacity: 50%;
+    z-index: -50;
+    background: linear-gradient(to bottom right, blue, pink);
+}
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+.title{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 26px;
+}
+
+.card-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.flex-box{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.flex-item-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+
+}
+.title{
+    margin-bottom: 10px;
+}
+
+.flex-item {
+    border: 3px solid white;
+    border-radius: 8px;
+    background-color: #e0dfdf;
+    width: 350px;
+    height: 420px;
+}
+
+.task-name {
+    width: 300px;
+    border: 3px solid white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.task-description {
+    width: 300px;
+    height: 200px;
+    border: 3px solid white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.task-isdone {
+    margin-bottom: 10px;
+}
+
+.main-block {
+    padding-top: 30px;
+}
+
+.registration-form{
+    display: flex;
+    justify-content: center;
+}
+.player-info {
+    display: flex;
+    flex-direction: column;
+    border: 3px solid white;
+    border-radius: 8px;
+    background-color: #e0dfdf;
+    width: 350px;
+    height:320px;
+    padding: 20px;
+}
+.player-info input{
+    width: 300px;
+    margin-bottom: 10px;
+}
+#title{
+    font-size: 22px;
+}
+
+.login-form {
+    display: flex;
+    justify-content: center;
+}
+
+#player-info-login {
+    height: 250px;
+}
+
+.task-box {
+    width: 300px;
+    height: 105px;
+    background-color: white;
+    border: 3px solid white;
+    border-radius: 8px;
+    margin: 5px;
+}
+
+.task-box-name{
+    font-size: 20px;
+    margin-bottom: 3px;
+}
+
+.flex-container-buttons {
+    display: flex;
+    justify-content: end;
+    align-self: flex-end;
+}
+
+.task-box-description{
+    font-size: 14px;
+}
+
+.delete-task-button {
+    text-align: center;
+    padding: 0;
+    margin-right: 13px;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    line-height: 20px;
+}
+
+.checked-task-button {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+    line-height: 20px;
+}
+
+.flex-container-task{
+    display: flex;
+    flex-direction: row;
+}
+
+#calculatorNew, #calculatorDone{
+    margin-left: 5px;
+}
