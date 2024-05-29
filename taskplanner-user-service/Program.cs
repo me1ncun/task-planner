@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,26 +25,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
 
-// Add Redis cache
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-});
-
-builder.Services.AddSession(options =>
-{
-    options.Cookie.Name = "taskplanner-session";
-    options.IdleTimeout = TimeSpan.FromMinutes(20);
-});
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("http://localhost:5112")
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader().
+                AllowCredentials();
         });
 });
 
@@ -71,6 +61,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseCookiePolicy();
 
 app.UseAuthentication();
 app.UseAuthorization();
