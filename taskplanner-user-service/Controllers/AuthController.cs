@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.Contracts;
@@ -26,7 +27,13 @@ public class AuthController: Controller
         try
         {
             var token = await _userService.Login(request.Email, request.Password, request.RepeatPassword);
-            _context.HttpContext.Response.Cookies.Append("token", token);
+            _context.HttpContext.Response.Cookies.Append("token", token,  new CookieOptions
+            {
+                MaxAge = TimeSpan.FromMinutes(20),
+                HttpOnly = true,
+                Secure = false, 
+                SameSite = SameSiteMode.None 
+            });
             
             return Ok();
         }
