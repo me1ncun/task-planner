@@ -41,5 +41,12 @@ public class UserRepository: IUserRepository
         return user;
     }
     
-    
+    public async Task UpdatePassword(string email, string password)
+    {
+        var user = await GetByEmail(email);
+        
+        user.Password = password;
+        
+        await _appDbContext.SaveChangesAsync();
+    }
 }

@@ -71,5 +71,24 @@ namespace taskplanner_user_service.Controllers
             
             return Ok(user);
         }
+        
+        [HttpPost("/user/reset-password")]
+        public async Task<IActionResult> ResetPassword(UpdateUserRequest request)
+        {
+            try
+            {
+                await _userService.UpdatePassword(request.Email, request.NewPassword, request.ConfirmPassword);
+
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
     }
 }

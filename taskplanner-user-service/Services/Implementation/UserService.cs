@@ -45,4 +45,15 @@ public class UserService: IUserService
         return token;
     }
     
+    public async Task UpdatePassword(string email, string newPassword, string repeatedPassword)
+    {
+        if(newPassword != repeatedPassword)
+        {
+            throw new InvalidOperationException("Passwords do not match");
+        }
+        
+        var hashedPassword = HashPasswordHelper.HashPassword(newPassword);
+        
+        await _userRepository.UpdatePassword(email, hashedPassword);
+    }
 }
