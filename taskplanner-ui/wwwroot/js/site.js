@@ -87,29 +87,26 @@ function createTaskByTask(task) {
     });
 }
 
-function showRegistrationForm() 
-{
+function showRegistrationForm() {
     $(".registration-page").show();
     $(".login-page").hide();
+    $(".reset-page").hide();
 }
 
-function showLoginForm() 
-{
-
+function showLoginForm() {
+    $(".reset-page").hide();
     $(".login-page").show();
     $(".registration-page").hide();
 }
 
-function checkPasswordAndRegister() 
-{
+function checkPasswordAndRegister() {
     var password = $("#player-password-registration").val();
     var passwordRepeat = $("#player-password-repeat").val();
     var email = $("#player-email-registration").val();
 
     if (password != passwordRepeat) {
         alert("Passwords do not match");
-    }
-    else if (password != null && password != null && passwordRepeat != null) {
+    } else if (password != null && password != null && passwordRepeat != null) {
         event.preventDefault()
         var account = {
             "email": email,
@@ -141,8 +138,7 @@ function checkPasswordAndRegister()
     }
 }
 
-function checkInfoAndLogin() 
- {
+function checkInfoAndLogin() {
     event.preventDefault();
     var password = $("#player-password-login").val();
     var email = $("#player-email-login").val();
@@ -160,6 +156,9 @@ function checkInfoAndLogin()
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(account),
+            xhrFields: {
+                withCredentials: true // Включает куки в запрос
+            },
             success: function (data, textStatus, xhr) {
                 // data содержит ответ от сервера
                 console.log(data);
@@ -169,7 +168,7 @@ function checkInfoAndLogin()
                 $(".main-block").show();
                 $(".login-page").hide();
 
-                $("#users-email").text(account.Email).show();
+                $("#users-email").text(account.email).show();
 
                 taskOutput();
 
@@ -178,6 +177,44 @@ function checkInfoAndLogin()
             },
             error: function (xhr, textStatus, errorThrown) {
                 alert("Password or email doesnt match, try again");
+            }
+        });
+    }
+}
+
+function showResetPage() {
+    $(".reset-page").show();
+    $(".login-page").hide();
+}
+
+function resetPassword() {
+    var newPassword = $("#player-password-reset").val();
+    var confirmPassword = $("#player-password-repeat-reset").val();
+    var email = $("#player-email-login").val();
+
+    if (newPassword != confirmPassword) {
+        alert("Passwords do not match");
+    } else if (newPassword != null && confirmPassword != null) {
+        event.preventDefault()
+        var account = {
+            "email": email,
+            "newPassword": newPassword,
+            "confirmPassword": confirmPassword
+        };
+        $.ajax({
+            url: 'http://localhost:5173/user/reset-password',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(account),
+            success: function (data, textStatus, xhr) {
+                console.log("Your password has been changed");
+
+                $(".reset-page").hide();
+                $(".login-page").show();
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log('Error in Operation');
             }
         });
     }
@@ -239,13 +276,14 @@ function deleteAllTasks() {
     $(".tasks-list-new").empty();
 }
 
+
 function createDoneTaskBox(task) {
     var taskbox = '<div class="task-box">' +
-        '<div class="task-box-name"><b>' + task.name + '</b></div>' +
+        '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<button class="delete-task-button" onclick="deleteTask(\'' + task.id + '\')">X</button>' +
-        '<button class="checked-task-button" onclick="makeTaskUndone(\'' + task.id + '\')">V</button>' +
+        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;"></img>' +
+        '<img src="photo/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
         '</div>' +
         '</div>';
 
@@ -254,11 +292,11 @@ function createDoneTaskBox(task) {
 
 function createUndoneTaskBox(task) {
     var taskbox = '<div class="task-box">' +
-        '<div class="task-box-name"><b>' + task.name + '</b></div>' +
+        '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<button class="delete-task-button" onclick="deleteTask(\'' + task.id + '\')">X</button>' +
-        '<button class="checked-task-button" onclick="makeTaskDone(\'' + task.id + '\')">V</button>' +
+        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;"></img>' +
+        '<img src="photo/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
         '</div>' +
         '</div>';
 
@@ -270,25 +308,21 @@ function taskOutput() {
         url: 'http://localhost:5173/tasks',
         type: 'GET',
         contentType: 'application/json',
+        xhrFields: {
+            withCredentials: true // Включает куки в запрос
+        },
         success: function (data, textStatus, xhr) {
             for (var i = 0; i < data.length; i++) {
                 var task = data[i];
-                if (task.isDone == "true") {
-                    // Concatenate task box components
+                if (task.status == "Done") {
                     var taskbox = createDoneTaskBox(task);
 
-                    // Append the task boxes to a container (adjust container selector accordingly)
                     $(".tasks-list-done").append(taskbox);
 
-                    /*    calculateDonePlus();*/
-
-                } else if (task.isDone == "false") {
-                    // Concatenate task box components
+                } else if (task.status == "Not done") {
                     var taskbox = createUndoneTaskBox(task);
-                    // Append the task boxes to a container (adjust container selector accordingly)
-                    $(".tasks-list-new").append(taskbox);
 
-                    /*calculateNewPlus();*/
+                    $(".tasks-list-new").append(taskbox);
                 }
             }
         },
@@ -309,41 +343,41 @@ function logOut() {
 
 function createTask() {
     let taskResult = $("#task-isdone").prop("checked") ? "Done" : "Not done";
-    
+    var title = $(".task-name").val();
+    var description = $(".task-description").val()
+
     var task = {
-        "Title": $(".task-name").val(),
-        "Description": $(".task-description").val(),
+        "Title": title,
+        "Description": description,
         "Status": taskResult,
     };
 
     $.ajax({
         url: 'http://localhost:5173/tasks',
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(task),
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        data: new URLSearchParams({
+            'title': title,
+            'Description': description,
+            'Status': taskResult
+        })
+            .toString(),
+        xhrFields: {
+            withCredentials: true
+        },
         success: function (data, textStatus, xhr) {
             console.log(data);
 
-            task.id = data.id;
-
-            if (task.IsDone == "true") {
-
+            if (taskResult == "Done") {
                 var newTaskBox = createUndoneTaskBox(task);
 
-                // Append the new task box to the existing tasks list
                 $(".tasks-list-done").append(newTaskBox);
 
-                /* calculateDonePlus();*/
-
             } else {
+                var newTaskBox = createDoneTaskBox(task);
+                ;
 
-                var newTaskBox = createDoneTaskBox(task);;
-
-                // Append the new task box to the existing tasks list
                 $(".tasks-list-new").append(newTaskBox);
-
-                /* calculateNewPlus();*/
-
             }
 
             console.log("Your task has been created successfully");
@@ -353,49 +387,6 @@ function createTask() {
         }
     });
 }
-
-//$(document).ready(function () {
-//    // Получаем ссылку на блок и на элемент, в котором будет отображаться результат
-//    var block = $(".tasks-list-new");
-
-//    var resultElement = document.getElementById("calculatorNew");
-
-//    // Получаем количество элементов в блоке
-//    var count = block.children(".task-box").length;
-//    console.log(count);
-
-//    // Выводим результат
-//    resultElement.textContent += count;
-//});
-
-//function calculateDonePlus{
-
-//    var resultElement = document.getElementById("calculatorDone");
-
-//    resultElement.textContent += parseInt(resultElement.textContent) + 1;
-//}
-
-//function calculateDoneMinus{
-
-//    var resultElement = document.getElementById("calculatorDone");
-
-//    resultElement.textContent += parseInt(resultElement.textContent) - 1;
-//}
-
-//function calculateNewPlus{
-
-//    var resultElement = document.getElementById("calculatorNew");
-
-//    resultElement.textContent += parseInt(resultElement.textContent) + 1;
-//}
-
-//function calculateNewMinus{
-
-//    var resultElement = document.getElementById("calculatorNew");
-
-//    resultElement.textContent += parseInt(resultElement.textContent) - 1;
-//}
-
 
 $(document).ready(function () {
     $("#logout-reference").hide();
