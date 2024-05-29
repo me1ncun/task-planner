@@ -7,4 +7,5 @@ public interface IUserService
 {
     public Task<string> Login(string email, string password, string repeatedPassword);
     public Task Register(string email, string password);
+    public Task UpdatePassword(string email, string newPassword, string repeatedPassword);
 }

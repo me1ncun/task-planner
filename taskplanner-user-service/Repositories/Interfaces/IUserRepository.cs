@@ -7,4 +7,5 @@ public interface IUserRepository
 {
     public Task Add(string email, string password);
     public Task<User> GetByEmail(string email);
+    public Task UpdatePassword(string email, string password);
 }
