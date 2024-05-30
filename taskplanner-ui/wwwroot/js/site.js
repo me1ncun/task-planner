@@ -113,10 +113,13 @@ function checkPasswordAndRegister() {
             "password": password
         };
         $.ajax({
-            url: 'http://localhost:5173/user',
+            url: 'http://localhost:8080/user',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(account),
+            xhrFields: {
+                withCredentials: true // Включает куки в запрос
+            },
             success: function (data, textStatus, xhr) {
                 console.log(data);
                 console.log("Your account has been created successfully");
@@ -152,7 +155,7 @@ function checkInfoAndLogin() {
         };
 
         $.ajax({
-            url: 'http://localhost:5173/auth/login',
+            url: 'http://localhost:8080/auth/login',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(account),
@@ -202,7 +205,7 @@ function resetPassword() {
             "confirmPassword": confirmPassword
         };
         $.ajax({
-            url: 'http://localhost:5173/user/reset-password',
+            url: 'http://localhost:8080/user/reset-password',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(account),
@@ -247,16 +250,18 @@ function deleteTask(taskId) {
     var task = {
         "Id": parseInt(taskId)
     };
-    var requestData = $.param(task);
 
     $.ajax({
-        url: 'https://localhost:7201/task?' + requestData, // добавляем параметры в URL
+        url: 'http://localhost:8080/tasks',
         type: 'DELETE',
+        data: new URLSearchParams({
+            'id': task.Id,
+        }).toString(),
         contentType: 'application/x-www-form-urlencoded',
+        xhrFields: {
+            withCredentials: true // Включает куки в запрос
+        },
         success: function (textStatus, xhr) {
-            deleteAllTasks();
-
-            /*$(".flex-item").css("height", "-=105px");*/ //
 
             console.log("Your task has been deleted successfully");
             taskOutput();
@@ -268,21 +273,13 @@ function deleteTask(taskId) {
     });
 }
 
-function deleteAllTasks() {
-    // Очистка содержимого контейнера с выполненными задачами
-    $(".tasks-list-done").empty();
-
-    // Очистка содержимого контейнера с новыми задачами
-    $(".tasks-list-new").empty();
-}
-
 
 function createDoneTaskBox(task) {
     var taskbox = '<div class="task-box">' +
         '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;"></img>' +
+        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;" onclick="deleteTask(\'' + task.id + '\')"></img>' +
         '<img src="photo/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
         '</div>' +
         '</div>';
@@ -290,12 +287,22 @@ function createDoneTaskBox(task) {
     return taskbox;
 }
 
+function calculateNew(){
+    var length = $('.tasks-list-new > div').length;
+    $("#calculatorNew").text(length);
+}
+
+function calculateDone(){
+    var length = $('.tasks-list-done > div').length;
+    $("#calculatorDone").text(length);
+}
+
 function createUndoneTaskBox(task) {
     var taskbox = '<div class="task-box">' +
         '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;"></img>' +
+        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;" onclick="deleteTask(\'' + task.id + '\')"></img>' +
         '<img src="photo/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
         '</div>' +
         '</div>';
@@ -305,7 +312,7 @@ function createUndoneTaskBox(task) {
 
 function taskOutput() {
     $.ajax({
-        url: 'http://localhost:5173/tasks',
+        url: 'http://localhost:8080/tasks',
         type: 'GET',
         contentType: 'application/json',
         xhrFields: {
@@ -325,6 +332,8 @@ function taskOutput() {
                     $(".tasks-list-new").append(taskbox);
                 }
             }
+            calculateNew();
+            calculateDone();
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log('Error in Operation');
@@ -333,6 +342,20 @@ function taskOutput() {
 }
 
 function logOut() {
+    $.ajax({
+        url: 'http://localhost:8080/logout',
+        type: 'POST',
+        xhrFields: {
+            withCredentials: true // Включает куки в запрос
+        },
+        success: function (data, textStatus, xhr) {
+            console.log("You have successfully loged out");
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log('Error in Operation');
+        }
+    });
+
     $("#logout-reference").hide();
     $("#login-reference").show();
     $("#registration-reference").show();
@@ -353,7 +376,7 @@ function createTask() {
     };
 
     $.ajax({
-        url: 'http://localhost:5173/tasks',
+        url: 'http://localhost:8080/tasks',
         type: 'POST',
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         data: new URLSearchParams({
