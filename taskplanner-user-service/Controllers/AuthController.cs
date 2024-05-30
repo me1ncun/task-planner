@@ -31,7 +31,7 @@ public class AuthController: Controller
             {
                 MaxAge = TimeSpan.FromMinutes(20),
                 HttpOnly = true,
-                Secure = false, 
+                Secure = true, 
                 SameSite = SameSiteMode.None 
             });
             
@@ -41,5 +41,19 @@ public class AuthController: Controller
         {
             return StatusCode(StatusCodes.Status401Unauthorized, new { message = ex.Message });
         }
+    }
+    
+    [HttpPost("/logout")]
+    public IActionResult Logout()
+    {
+        _context.HttpContext.Response.Cookies.Delete("token", new CookieOptions
+        {
+            MaxAge = TimeSpan.FromSeconds(1),
+            HttpOnly = true,
+            Secure = true, 
+            SameSite = SameSiteMode.None 
+        });
+        
+        return Ok();
     }
 }
