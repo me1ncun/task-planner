@@ -1,19 +1,93 @@
 ﻿version: '3.4'
 
+networks:
+  deploy-guide:
+    driver: bridge
+
 services:
   RabbitMQ:
     image: rabbitmq:3.10.7-management
     container_name: RabbitMQ
     restart: always
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${RABBITMQ_PORT}:15672"
+    networks:
+      - deploy-guide
     environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 500000000
     volumes:
-       - ./rabbitmq:/var/lib/rabbitmq
-      
+      - ./rabbitmq:/var/lib/rabbitmq
+  
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER = ${POSTGRES_USER}
+      - POSTGRES_PASSWORD = ${POSTGRES_PASSWORD}
+      - POSTGRES_DB = ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    networks:
+      - deploy-guide
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+  
+  user-api:
+    image: user-api
+    container_name: user-api
+    build:
+      context: .
+      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-user-service/Dockerfile
+    ports:
+      - "${SERVER_PORT}:8080"
+    networks:
+      - deploy-guide
+    depends_on:
+      - RabbitMQ
+      - postgres
+    command: [ "dotnet", "ef", "database update" ]
+
+  user-frontend:
+    image: user-frontend
+    container_name: user-frontend
+    build:
+      context: .
+      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-ui/Dockerfile
+    ports:
+      - "${CLIENT_PORT}:8080"
+    networks:
+      - deploy-guide
+    depends_on:
+      - user-api
+      - RabbitMQ
+      - postgres
+  
+  user-mailer:
+    image: user-mailer
+    container_name: user-mailer
+    build:
+      context: .
+      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-mailservice/Dockerfile
+    networks:
+      - deploy-guide
+    depends_on:
+      - RabbitMQ
+    
+  user-scheduler:
+    image: user-scheduler
+    container_name: user-scheduler
+    build:
+      context: .
+      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-scheduler/Dockerfile
+    networks:
+      - deploy-guide
+    depends_on:
+      - RabbitMQ
+      - postgres
+
 volumes:
-    rabbitmq:
+  rabbitmq:
+  pg-data:
