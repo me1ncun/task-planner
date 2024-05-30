@@ -33,7 +33,14 @@ namespace taskplanner_user_service.Controllers
                 await _userService.Register(request.Email, request.Password);
 
                 var token = await _userService.Login(request.Email, request.Password, request.Password);
-                _context.HttpContext.Response.Cookies.Append("token", token);
+                    
+                _context.HttpContext.Response.Cookies.Append("token", token,  new CookieOptions
+                {
+                    MaxAge = TimeSpan.FromMinutes(20),
+                    HttpOnly = true,
+                    Secure = true, 
+                    SameSite = SameSiteMode.None 
+                });
                 
                 var greetingMessage = _mqService.CreateEmailMessage(request);
             
