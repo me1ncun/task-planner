@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("http://localhost:5112")
+            policy.WithOrigins("http://localhost")
                 .AllowAnyMethod()
                 .AllowAnyHeader().
                 AllowCredentials();
@@ -62,7 +62,11 @@ app.UseHttpsRedirection();
 
 app.UseCors();
 
-app.UseCookiePolicy();
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.None,
+    Secure = CookieSecurePolicy.None
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
