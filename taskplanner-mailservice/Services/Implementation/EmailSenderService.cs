@@ -9,13 +9,12 @@ namespace taskplanner_mailservice.Services.Implementation;
 public class EmailSenderService : IEmailSenderService
 {
     private readonly EmailSettings _emailSettings;
-
     public EmailSenderService(IOptions<EmailSettings> emailSettings)
     {
         _emailSettings = emailSettings.Value;
     }
 
-    public void SendEmail(EmailMessage emailMessage)
+    public async void SendEmail(EmailMessage emailMessage)
     {
         MailMessage mail = new MailMessage();
 
@@ -28,8 +27,9 @@ public class EmailSenderService : IEmailSenderService
         client.Host = _emailSettings.SmtpServer;
         client.Port = _emailSettings.SmtpPort;
         client.EnableSsl = _emailSettings.EnableSsl;
-        client.Credentials = new NetworkCredential(_emailSettings.SenderEmail, _emailSettings.Password);
-        client.Send(mail);
+        client.Credentials = new NetworkCredential(_emailSettings.SenderEmail, _emailSettings.Password); 
+        
+        await client.SendMailAsync(mail);
     }
 
 }

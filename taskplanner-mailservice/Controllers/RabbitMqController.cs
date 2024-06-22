@@ -4,7 +4,7 @@ using taskplanner_mailservice.Services.Implementation;
 
 namespace taskplanner_mailservice.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class RabbitMqController : ControllerBase
 {
