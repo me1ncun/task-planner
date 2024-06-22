@@ -18,8 +18,15 @@ public class TestRabbitMqController : ControllerBase
     [HttpGet("/rabbit/listen")]
     public async Task<IActionResult> Start()
     {
-        await _rabbitMqListener.StartAsync(CancellationToken.None);
+        try
+        {
+            await _rabbitMqListener.StartAsync(CancellationToken.None);
         
-        return Ok("Слушатель запущен");
+            return Ok("Слушатель запущен");
+        }
+        catch (Exception e)
+        { 
+            return BadRequest(e.Message);
+        }
     }
 }

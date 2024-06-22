@@ -27,7 +27,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddRabbitMqSettings(this IServiceCollection services, IConfiguration configuration)
     {
         return services
-            .Configure<RabbitMqSettings>(configuration.GetSection("RabbitMQ"));
+            .Configure<RabbitMqSettings>(configuration.GetSection("RabbitMq"));
     }
     
 }

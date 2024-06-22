@@ -22,40 +22,47 @@ public class RabbitMqListener : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory()
+        try
         {
-            HostName = _rabbitMqSettings.Host, 
-            Port = _rabbitMqSettings.Port,
-            UserName = _rabbitMqSettings.UserName,
-            Password = _rabbitMqSettings.Password
-        };
-        using (var connection = factory.CreateConnection())
-        using (var channel = connection.CreateModel())
-        {
-            channel.QueueDeclare(queue: _rabbitMqSettings.QueueName,
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null);
-            stoppingToken.ThrowIfCancellationRequested();
-
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (ch, ea) =>
+            var factory = new ConnectionFactory()
             {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                
-                var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
-                
-                /*_emailSenderService.SendEmail(emailMessage);*/
-                
-                Console.WriteLine($"Получено сообщение: {message}");
+                HostName = _rabbitMqSettings.Host,
+                Port = _rabbitMqSettings.Port,
+                UserName = _rabbitMqSettings.UserName,
+                Password = _rabbitMqSettings.Password
             };
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: _rabbitMqSettings.QueueName,
+                    durable: false,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
+                stoppingToken.ThrowIfCancellationRequested();
 
-            channel.BasicConsume(_rabbitMqSettings.QueueName, autoAck: true, consumer: consumer);
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += (ch, ea) =>
+                {
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+
+                    var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
+
+                    /*_emailSenderService.SendEmail(emailMessage);*/
+
+                    Console.WriteLine($"Получено сообщение: {message}");
+                };
+
+                channel.BasicConsume(_rabbitMqSettings.QueueName, autoAck: true, consumer: consumer);
+                return Task.CompletedTask;
+            }
         }
-
-        return Task.CompletedTask;
+        
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
     }
 
     public override void Dispose()
