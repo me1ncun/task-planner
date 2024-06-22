@@ -1,8 +1,12 @@
+using System.Reflection;
 using Coravel;
 using Coravel.Invocable;
 using Coravel.Scheduling.Schedule.Interfaces;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using taskplanner_scheduler.Database;
+using taskplanner_scheduler.Filters;
 using taskplanner_scheduler.Helpers;
 using taskplanner_scheduler.Repositories;
 using taskplanner_scheduler.Services.Implementation;
@@ -12,7 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.DocumentFilter<CustomSwaggerFilter>();
+    c.ResolveConflictingActions(_ => _.First());
+});
 
 builder.Services.AddScheduler();
 builder.Services.AddScoped<UserRepository>();

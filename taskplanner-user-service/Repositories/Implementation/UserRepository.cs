@@ -49,4 +49,9 @@ public class UserRepository: IUserRepository
         
         await _appDbContext.SaveChangesAsync();
     }
+    
+    public async Task<List<User>> GetAll()
+    {
+        return await _appDbContext.Users.ToListAsync();
+    }
 }

@@ -11,7 +11,6 @@ using taskplanner_scheduler.Helpers;
 using taskplanner_scheduler.Models;
 using taskplanner_scheduler.Services.Implementation;
 using Task = System.Threading.Tasks.Task;
-using taskplanner_scheduler.Models; 
 
 public class RabbitMqService : IRabbitMqService, IInvocable
 {

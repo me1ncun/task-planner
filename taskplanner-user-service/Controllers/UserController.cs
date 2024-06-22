@@ -97,5 +97,13 @@ namespace taskplanner_user_service.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
+        
+        [HttpGet("/users")]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userService.GetAll();
+            
+            return Ok(users);
+        }
     }
 }

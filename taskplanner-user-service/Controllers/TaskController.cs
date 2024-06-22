@@ -6,7 +6,9 @@ using taskplanner_user_service.Services.Interfaces;
 
 namespace taskplanner_user_service.Controllers;
 
-public class TaskController : Controller
+[ApiController]
+[Route("[controller]")]
+public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
 

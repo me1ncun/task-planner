@@ -56,4 +56,9 @@ public class UserService: IUserService
         
         await _userRepository.UpdatePassword(email, hashedPassword);
     }
+    
+    public async Task<List<User>> GetAll()
+    {
+        return await _userRepository.GetAll();
+    }
 }

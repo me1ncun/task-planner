@@ -40,7 +40,7 @@ services:
     container_name: user-api
     build:
       context: .
-      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-user-service/Dockerfile
+      dockerfile: taskplanner-user-service/Dockerfile
     ports:
       - "${SERVER_PORT}:8080"
     networks:
@@ -55,7 +55,7 @@ services:
     container_name: user-frontend
     build:
       context: .
-      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-ui/Dockerfile
+      dockerfile: taskplanner-ui/Dockerfile
     ports:
       - "${CLIENT_PORT}:8080"
     networks:
@@ -70,7 +70,7 @@ services:
     container_name: user-mailer
     build:
       context: .
-      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-mailservice/Dockerfile
+      dockerfile: taskplanner-mailservice/Dockerfile
     networks:
       - deploy-guide
     depends_on:
@@ -81,7 +81,7 @@ services:
     container_name: user-scheduler
     build:
       context: .
-      dockerfile: C:/Users/denis/OneDrive/Рабочий стол/taskplanner/taskplanner-user-service/taskplanner-scheduler/Dockerfile
+      dockerfile: taskplanner-scheduler/Dockerfile
     networks:
       - deploy-guide
     depends_on:
