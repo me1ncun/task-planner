@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using taskplanner_user_service.Models;
+using taskplanner_scheduler.Models;
+using Task = System.Threading.Tasks.Task;
 
 namespace taskplanner_scheduler.Database;
 
@@ -18,5 +19,5 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
-    public DbSet<taskplanner_user_service.Models.Task> Tasks { get; set; }
+    public DbSet<Task> Tasks { get; set; }
 }

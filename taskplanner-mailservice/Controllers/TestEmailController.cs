@@ -6,24 +6,26 @@ namespace taskplanner_mailservice.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class EmailController: ControllerBase
+public class TestEmailController: ControllerBase
 {
     private readonly IEmailSenderService _emailSenderService;
     
-    public EmailController(IEmailSenderService emailSenderService)
+    public TestEmailController(IEmailSenderService emailSenderService)
     {
         _emailSenderService = emailSenderService;
     }
     
-    [HttpPost]
+    [HttpPost("/email/send")]
     public void SendEmail(string to, string subject, string body)
     {
-        _emailSenderService.SendEmail(new EmailMessage
+        var message = new EmailMessage
         {
             To = to,
             Subject = subject,
             Body = body
-        });
+        };
+        
+        _emailSenderService.SendEmail(message);
     }
     
 }

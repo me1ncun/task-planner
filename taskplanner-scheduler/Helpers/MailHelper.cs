@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using taskplanner_scheduler.Models;
 using taskplanner_scheduler.Services.Implementation;
 
 namespace taskplanner_scheduler.Helpers;
@@ -12,7 +13,7 @@ public class MailHelper
         _taskService = taskService;
     }
     
-    public async Task<string> CreateMailBody(taskplanner_scheduler.Models.User user)
+    public async Task<string> CreateMailBody(User user)
     {
         var tasks = await _taskService.GetUsersTask(user);
 

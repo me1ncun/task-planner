@@ -1,4 +1,5 @@
-﻿using taskplanner_scheduler.Repositories;
+﻿using taskplanner_scheduler.Models;
+using taskplanner_scheduler.Repositories;
 namespace taskplanner_scheduler.Services.Implementation;
 
 public class UserService
@@ -10,7 +11,7 @@ public class UserService
         _userRepository = userRepository;
     }
     
-    public async Task<IEnumerable<taskplanner_scheduler.Models.User>> GetUsers()
+    public async Task<IEnumerable<User>> GetUsers()
     {
         return await _userRepository.GetAll();
     }

@@ -5,7 +5,8 @@ namespace taskplanner_user_service.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    public Task Add(string email, string password);
-    public Task<User> GetByEmail(string email);
-    public Task UpdatePassword(string email, string password);
+    Task Add(string email, string password);
+    Task<User> GetByEmail(string email);
+    Task UpdatePassword(string email, string password);
+    Task<List<User>> GetAll();
 }

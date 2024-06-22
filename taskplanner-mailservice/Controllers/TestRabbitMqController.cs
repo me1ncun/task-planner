@@ -6,16 +6,16 @@ namespace taskplanner_mailservice.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class RabbitMqController : ControllerBase
+public class TestRabbitMqController : ControllerBase
 {
     private readonly RabbitMqListener _rabbitMqListener;
     
-    public RabbitMqController(RabbitMqListener rabbitMqListener)
+    public TestRabbitMqController(RabbitMqListener rabbitMqListener)
     {
         _rabbitMqListener = rabbitMqListener;
     }
     
-    [HttpGet]
+    [HttpGet("/rabbit/listen")]
     public async Task<IActionResult> Start()
     {
         await _rabbitMqListener.StartAsync(CancellationToken.None);

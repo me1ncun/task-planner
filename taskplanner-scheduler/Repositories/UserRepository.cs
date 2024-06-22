@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
+using taskplanner_scheduler.Models;
 
 namespace taskplanner_scheduler.Repositories;
 
@@ -14,13 +15,13 @@ public class UserRepository
         sqlString = _configuration.GetConnectionString("Database");
     }
     
-    public async Task<IEnumerable<taskplanner_scheduler.Models.User>> GetAll()
+    public async Task<IEnumerable<User>> GetAll()
     {
         using (NpgsqlConnection connection = new NpgsqlConnection(sqlString))
         {
             string query = """SELECT * FROM users;""";
 
-            return await connection.QueryAsync<taskplanner_scheduler.Models.User>(query);
+            return await connection.QueryAsync<User>(query);
         }
     }
 }
