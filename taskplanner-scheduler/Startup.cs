@@ -1,8 +1,8 @@
-﻿using System.Reflection;
-using Microsoft.OpenApi.Models;
-using taskplanner_mailservice.Extensions;
+﻿using Coravel;
+using taskplanner_scheduler.Filters;
+using taskplanner_sheduler.Extensions;
 
-namespace taskplanner_mailservice;
+namespace taskplanner_scheduler;
 
 public class Startup
 {
@@ -17,16 +17,23 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         // Application services
-        services.AddEmailSenderService()
-            .AddConsumerService()
-            .AddEmailSettings(Configuration)
-            .AddKafkaSettings(Configuration);
+        services.AddDatabase(Configuration)
+            .AddKafkaSettings(Configuration)
+            .AddProducerService()
+            .AddMailHelper()
+            .AddServicesAndRepositories();
 
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen();
+        services.AddScheduler();
+
+        services.AddSwaggerGen(c =>
+        {
+            c.DocumentFilter<CustomSwaggerFilter>();
+            c.ResolveConflictingActions(_ => _.First());
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,7 +44,7 @@ public class Startup
             app.UseSwagger()
                 .UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Email Service API V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Scheduler Service API V1");
                     c.RoutePrefix = string.Empty;
                 });
         }
@@ -45,6 +52,11 @@ public class Startup
         app.UseHttpsRedirection();
 
         app.UseRouting();
+
+/*app.Services.UseScheduler(scheduler =>
+{
+scheduler.Schedule<ProducerService>().DailyAt(11, 02).Zoned(TimeZoneInfo.Local).PreventOverlapping(nameof(ProducerService));
+}).LogScheduledTaskProgress(app.Services.GetRequiredService<ILogger<IScheduler>>());*/
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }

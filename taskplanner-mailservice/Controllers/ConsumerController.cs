@@ -6,21 +6,21 @@ namespace taskplanner_mailservice.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class TestRabbitMqController : ControllerBase
+public class ConsumerController : ControllerBase
 {
-    private readonly RabbitMqListener _rabbitMqListener;
+    private readonly ConsumerService _consumerService;
     
-    public TestRabbitMqController(RabbitMqListener rabbitMqListener)
+    public ConsumerController(ConsumerService consumerService)
     {
-        _rabbitMqListener = rabbitMqListener;
+        _consumerService = consumerService;
     }
     
-    [HttpGet("/rabbit/listen")]
+    [HttpGet("/kafka/listen")]
     public async Task<IActionResult> Start()
     {
         try
         {
-            await _rabbitMqListener.StartAsync(CancellationToken.None);
+            await _consumerService.StartAsync(CancellationToken.None);
         
             return Ok("Слушатель запущен");
         }

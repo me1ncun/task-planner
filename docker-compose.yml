@@ -5,20 +5,49 @@ networks:
     driver: bridge
 
 services:
-  RabbitMQ:
-    image: rabbitmq:3.10.7-management
-    container_name: RabbitMQ
-    restart: always
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper
+    container_name: zookeeper
     ports:
-      - "${RABBITMQ_PORT}:15672"
-    networks:
-      - deploy-guide
+      - "${ZOOKEEPER_PORT}:2181"
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 500000000
-    volumes:
-      - ./rabbitmq:/var/lib/rabbitmq
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "${KAFKA_PORT}:9092"
+      - "9997:9997"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: '${KAFKA_ZOOKEEPER_CONNECT}'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: '${KAFKA_ADVERTISED_LISTENERS}'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: '${KAFKA_JMX_PORT}'
+      KAFKA_JMX_HOSTNAME: kafka
+  
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "${KAFKA_UI_PORT}:8080"
+    depends_on:
+      - kafka
+      - zookeeper
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true
   
   postgres:
     image: postgres:latest
@@ -46,7 +75,7 @@ services:
     networks:
       - deploy-guide
     depends_on:
-      - RabbitMQ
+      - kafka
       - postgres
     command: [ "dotnet", "ef", "database update" ]
 
@@ -62,7 +91,7 @@ services:
       - deploy-guide
     depends_on:
       - user-api
-      - RabbitMQ
+      - kafka
       - postgres
   
   user-mailer:
@@ -74,8 +103,8 @@ services:
     networks:
       - deploy-guide
     depends_on:
-      - RabbitMQ
-    
+      - kafka
+  
   user-scheduler:
     image: user-scheduler
     container_name: user-scheduler
@@ -85,7 +114,7 @@ services:
     networks:
       - deploy-guide
     depends_on:
-      - RabbitMQ
+      - kafka
       - postgres
 
 volumes:

@@ -2,13 +2,13 @@
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
 using taskplanner_mailservice.Models;
-using taskplanner_mailservice.Services.Interfaces;
 
 namespace taskplanner_mailservice.Services.Implementation;
 
-public class EmailSenderService : IEmailSenderService
+public class EmailSenderService
 {
     private readonly EmailSettings _emailSettings;
+    
     public EmailSenderService(IOptions<EmailSettings> emailSettings)
     {
         _emailSettings = emailSettings.Value;
@@ -31,5 +31,4 @@ public class EmailSenderService : IEmailSenderService
         
         await client.SendMailAsync(mail);
     }
-
 }

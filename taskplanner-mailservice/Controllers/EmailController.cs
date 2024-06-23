@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using taskplanner_mailservice.Models;
-using taskplanner_mailservice.Services.Interfaces;
+using taskplanner_mailservice.Services.Implementation;
 
 namespace taskplanner_mailservice.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class TestEmailController: ControllerBase
+public class EmailController: ControllerBase
 {
-    private readonly IEmailSenderService _emailSenderService;
+    private readonly EmailSenderService _emailSenderService;
     
-    public TestEmailController(IEmailSenderService emailSenderService)
+    public EmailController(EmailSenderService emailSenderService)
     {
         _emailSenderService = emailSenderService;
     }

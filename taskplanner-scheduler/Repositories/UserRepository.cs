@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using taskplanner_scheduler.Database;
 using taskplanner_scheduler.Models;
 
 namespace taskplanner_scheduler.Repositories;
@@ -7,17 +9,17 @@ namespace taskplanner_scheduler.Repositories;
 public class UserRepository
 {
     private readonly IConfiguration _configuration;
-    private readonly string sqlString;
+    private readonly string connectionString;
     
     public UserRepository(IConfiguration configuration)
     {
         _configuration = configuration;
-        sqlString = _configuration.GetConnectionString("Database");
+        connectionString = _configuration.GetConnectionString("Database");
     }
     
     public async Task<IEnumerable<User>> GetAll()
     {
-        using (NpgsqlConnection connection = new NpgsqlConnection(sqlString))
+        using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
         {
             string query = """SELECT * FROM users;""";
 

@@ -6,16 +6,9 @@ namespace taskplanner_scheduler.Database;
 
 public class AppDbContext : DbContext
 {
-    private IConfiguration Configuration;
-    
-    public AppDbContext(IConfiguration configuration)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
-        Configuration = configuration;
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(Configuration.GetConnectionString("Database"));
     }
 
     public DbSet<User> Users { get; set; }
