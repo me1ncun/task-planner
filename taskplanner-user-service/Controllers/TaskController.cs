@@ -1,5 +1,4 @@
-﻿using System.Security.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.Contracts;
 using taskplanner_user_service.Services.Interfaces;
@@ -31,11 +30,11 @@ public class TaskController : ControllerBase
 
     [Authorize]
     [HttpPost("/tasks")]
-    public async Task<IActionResult> CreateTask(TaskRequest request)
+    public async Task<IActionResult> CreateTask(TaskAddRequest addRequest)
     {
         var userId = GetUserIdIfAuthenticated();
 
-        await _taskService.Add(request.Title, request.Description, request.Status, userId, request.DoneAt);
+        await _taskService.Add(addRequest.Title, addRequest.Description, addRequest.Status, userId, addRequest.DoneAt);
 
         return Ok();
     }
@@ -46,7 +45,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            await _taskService.Update(request.Id, request.Title, request.Description, request.Status, request.DoneAt);
+            await _taskService.Update(request.Title, request.Description, request.Status, request.DoneAt);
 
             return Ok();
         }
@@ -82,5 +81,4 @@ public class TaskController : ControllerBase
         
         return userId;
     }
-
 }

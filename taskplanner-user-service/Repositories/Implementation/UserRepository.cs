@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using taskplanner_user_service.Database;
+using taskplanner_user_service.Exceptions;
 using taskplanner_user_service.Models;
 using taskplanner_user_service.Repositories.Interfaces;
 using Task = System.Threading.Tasks.Task;
@@ -21,7 +22,7 @@ public class UserRepository: IUserRepository
     
         if (existingUser != null)
         {
-            throw new InvalidOperationException("A user with this email already exists");
+            throw new ThrownException("A user with this email already exists");
         }
         
         var user = new User

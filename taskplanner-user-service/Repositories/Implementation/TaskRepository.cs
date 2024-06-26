@@ -37,9 +37,9 @@ public class TaskRepository: ITaskRepository
         return tasks;
     }
     
-    public async Task Update(int taskId, string title, string description, string status, DateTime doneAt)
+    public async Task Update(string title, string description, string status, DateTime doneAt)
     {
-        var task = await _appDbContext.Tasks.FindAsync(taskId);
+        var task = await _appDbContext.Tasks.FindAsync(title);
         if (task == null)
         {
             throw new NullReferenceException("Task not found");

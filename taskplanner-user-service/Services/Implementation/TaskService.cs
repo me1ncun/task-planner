@@ -22,9 +22,9 @@ public class TaskService: ITaskService
         return await _taskRepository.GetByUserId(id);
     }
     
-    public async Task Update(int taskId, string title, string description, string status, DateTime doneAt)
+    public async Task Update(string title, string description, string status, DateTime doneAt)
     {
-        await _taskRepository.Update(taskId, title, description, status, doneAt);
+        await _taskRepository.Update(title, description, status, doneAt);
     }
     
     public async Task Delete(int id)

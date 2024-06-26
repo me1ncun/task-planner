@@ -10,14 +10,14 @@ using Task = System.Threading.Tasks.Task;
 
 public class ProducerService
 {
-    private readonly KafkaSettings _kafkaSettings;
+    private readonly taskplanner_scheduler.Models.KafkaSettings _kafkaSettings;
     private readonly UserService _userService;
     private readonly MailHelper _mailHelper;
     private readonly ILogger<ProducerService> _logger;
     private readonly IProducer<Null, string> _producer;
 
     public ProducerService(
-        IOptions<KafkaSettings> kafkaSettings,
+        IOptions<taskplanner_scheduler.Models.KafkaSettings> kafkaSettings,
         UserService userService,
         MailHelper mailHelper,
         ILogger<ProducerService> logger)

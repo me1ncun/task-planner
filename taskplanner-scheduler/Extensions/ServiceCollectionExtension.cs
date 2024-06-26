@@ -27,7 +27,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddKafkaSettings(this IServiceCollection services, IConfiguration configuration)
     {
         return services
-            .Configure<KafkaSettings>(configuration.GetSection("ApacheKafka"));
+            .Configure<taskplanner_scheduler.Models.KafkaSettings>(configuration.GetSection("ApacheKafka"));
     }
 
     public static IServiceCollection AddMailHelper(this IServiceCollection services)
