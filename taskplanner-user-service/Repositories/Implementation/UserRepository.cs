@@ -18,9 +18,8 @@ public class UserRepository: IUserRepository
     
     public async Task Add(string email, string password)
     {
-        var existingUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-    
-        if (existingUser != null)
+        var userExist = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (userExist != null)
         {
             throw new ThrownException("A user with this email already exists");
         }
