@@ -16,41 +16,38 @@ public class UserRepository: IUserRepository
         _appDbContext = appDbContext;
     }
     
-    public async Task Add(string email, string password)
+    public async Task InsertAsync(User user)
     {
-        var userExist = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (userExist != null)
-        {
-            throw new ThrownException("A user with this email already exists");
-        }
-        
-        var user = new User
-        {
-            Email = email,
-            Password = password
-        };
-        
         await _appDbContext.Users.AddAsync(user);
         await _appDbContext.SaveChangesAsync();
     }
-    
-    public async Task<User> GetByEmail(string email)
+
+    public async Task<User> GetUserByEmailAsync(string email)
     {
-        var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _appDbContext.Users.
+            FirstOrDefaultAsync(u => u.Email == email);
         
         return user;
     }
     
-    public async Task UpdatePassword(string email, string password)
+    public async Task<User> GetUserByIdAsync(int id)
     {
-        var user = await GetByEmail(email);
+        var user = await _appDbContext.Users.
+            FirstOrDefaultAsync(u => u.Id == id);
+        
+        return user;
+    }
+    
+    public async Task UpdatePasswordAsync(string email, string password)
+    {
+        var user = await GetUserByEmailAsync(email);
         
         user.Password = password;
         
         await _appDbContext.SaveChangesAsync();
     }
     
-    public async Task<List<User>> GetAll()
+    public async Task<List<User>> GetAllAsync()
     {
         return await _appDbContext.Users.ToListAsync();
     }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using taskplanner_user_service.Contracts;
+using taskplanner_user_service.DTOs;
 using taskplanner_user_service.Models;
 using taskplanner_user_service.Services.Interfaces;
 
@@ -43,7 +43,7 @@ namespace taskplanner_user_service.Controllers
         {
             try
             {
-                await _userService.UpdatePassword(request.Email, request.NewPassword, request.ConfirmPassword);
+                await _userService.UpdatePassword(request);
 
                 return Ok();
             }

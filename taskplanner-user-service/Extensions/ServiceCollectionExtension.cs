@@ -60,4 +60,10 @@ public static class ServiceCollectionExtension
             .AddScoped<ITaskService, TaskService>()
             .AddScoped<ITaskRepository, TaskRepository>();
     }
+    
+    public static IServiceCollection AddAutoMapper(this IServiceCollection services)
+    {
+        return services
+            .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    }
 }

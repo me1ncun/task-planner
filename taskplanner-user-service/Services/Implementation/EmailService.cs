@@ -1,4 +1,4 @@
-﻿using taskplanner_user_service.Contracts;
+﻿using taskplanner_user_service.DTOs;
 
 namespace taskplanner_user_service.Services.Implementation;
 

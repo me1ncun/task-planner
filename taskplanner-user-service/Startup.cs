@@ -21,7 +21,8 @@ public class Startup
             .AddServicesAndRepositories()
             .AddSwagger()
             .AddCorsPolicy()
-            .AddKafka(Configuration);
+            .AddKafka(Configuration)
+            .AddAutoMapper();
 
 
         services.AddControllers();

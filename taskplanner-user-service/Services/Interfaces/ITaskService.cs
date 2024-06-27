@@ -1,9 +1,11 @@
-﻿namespace taskplanner_user_service.Services.Interfaces;
+﻿using taskplanner_user_service.DTOs;
+
+namespace taskplanner_user_service.Services.Interfaces;
 
 public interface ITaskService
-{ 
-    Task Add(string title, string description, string status, int userId, DateTime doneAt);
-    Task<List<Models.Task>> GetByUserId(int id);
-    Task Update(string title, string description, string status, DateTime doneAt);
-    Task Delete(int id);
+{
+    Task<AddTaskResponse> Add(AddTaskRequest request);
+    Task<List<GetTaskResponse>> GetTasksByUserId(GetTaskRequest request);
+    Task<UpdateTaskResponse> Update(UpdateTaskRequest request);
+    Task<DeleteTaskResponse> Delete(DeleteTaskRequest request);
 }

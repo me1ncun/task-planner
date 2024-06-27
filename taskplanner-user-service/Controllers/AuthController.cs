@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using taskplanner_user_service.Contracts;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using taskplanner_user_service.DTOs;
 using taskplanner_user_service.Services.Implementation;
 using taskplanner_user_service.Services.Interfaces;
 
@@ -13,17 +14,20 @@ public class AuthController: ControllerBase
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly KafkaService _kafkaService;
     private readonly EmailService _emailService;
+    private readonly IMapper _mapper;
         
     public AuthController(
         IUserService userService,
         IHttpContextAccessor  contextAccessor,
         KafkaService kafkaService,
-        EmailService emailService)
+        EmailService emailService,
+        IMapper mapper)
     {
         _userService = userService;
         _contextAccessor = contextAccessor;
         _kafkaService = kafkaService;
         _emailService = emailService;
+        _mapper = mapper;
     }
     
     [HttpPost("/auth/login")]
@@ -31,8 +35,9 @@ public class AuthController: ControllerBase
     {
         try
         {
-            var token = await _userService.Login(request.Email, request.Password, request.RepeatPassword);
-            _contextAccessor.HttpContext.Response.Cookies.Append("token", token,  new CookieOptions
+            var user = await _userService.Login(request);
+            
+            _contextAccessor.HttpContext.Response.Cookies.Append("token", user.Token,  new CookieOptions
             {
                 MaxAge = TimeSpan.FromMinutes(20),
                 HttpOnly = true,
@@ -40,7 +45,7 @@ public class AuthController: ControllerBase
                 SameSite = SameSiteMode.None 
             });
             
-            return Ok();
+            return Ok(user);
         }
         catch (InvalidOperationException ex)
         {
@@ -53,11 +58,11 @@ public class AuthController: ControllerBase
     {
         try
         {
-            await _userService.Register(request.Email, request.Password);
-
-            var token = await _userService.Login(request.Email, request.Password, request.Password);
+            await _userService.Register(request);
+            
+            var user = await _userService.Login(_mapper.Map<LoginUserRequest>(request));
                     
-            _contextAccessor.HttpContext.Response.Cookies.Append("token", token,  new CookieOptions
+            _contextAccessor.HttpContext.Response.Cookies.Append("token", user.Token,  new CookieOptions
             {
                 MaxAge = TimeSpan.FromMinutes(20),
                 HttpOnly = true,
@@ -69,7 +74,7 @@ public class AuthController: ControllerBase
             
             _kafkaService.SendMessage(greetingMessage);
 
-            return Ok();
+            return Ok(user);
         }
         catch (InvalidOperationException ex)
         {

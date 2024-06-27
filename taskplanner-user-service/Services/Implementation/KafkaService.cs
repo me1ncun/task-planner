@@ -4,8 +4,6 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Unicode;
 using Confluent.Kafka;
-using RabbitMQ.Client;
-using taskplanner_user_service.Contracts;
 using taskplanner_user_service.Models;
 using Task = System.Threading.Tasks.Task;
 

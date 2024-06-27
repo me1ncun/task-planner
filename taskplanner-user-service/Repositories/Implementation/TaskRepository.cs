@@ -15,35 +15,36 @@ public class TaskRepository: ITaskRepository
         _appDbContext = appDbContext;
     }
     
-    public async Task Add(string title, string description, string status, int userId, DateTime doneAt)
+    public async Task InsertAsync(Models.Task task)
     {
-        var task = new Models.Task()
-        {
-            Title = title,
-            Description = description,
-            Status = status,
-            UserId = userId,
-            DoneAt = doneAt,
-        };
-        
         await _appDbContext.Tasks.AddAsync(task);
         await _appDbContext.SaveChangesAsync();
     }
     
-    public async Task<List<Models.Task>> GetByUserId(int id)
+    public async Task<List<Models.Task>> GetByUserIdAsync(int id)
     {
         var tasks = await _appDbContext.Tasks.Where(t => t.UserId == id).ToListAsync();
         
         return tasks;
     }
     
-    public async Task Update(string title, string description, string status, DateTime doneAt)
+    public async Task<Models.Task> GetByIdAsync(int id)
+    {
+        var task = await _appDbContext.Tasks.FindAsync(id);
+        
+        return task;
+    }
+    
+    public async Task<Models.Task> GetByTitleAsync(string title)
     {
         var task = await _appDbContext.Tasks.FindAsync(title);
-        if (task == null)
-        {
-            throw new NullReferenceException("Task not found");
-        }
+        
+        return task;
+    }
+    
+    public async Task UpdateAsync(string title, string description, string status, DateTime doneAt)
+    {
+        var task = await _appDbContext.Tasks.FindAsync(title);
         
         task.Title = title;
         task.Description = description;
@@ -53,13 +54,9 @@ public class TaskRepository: ITaskRepository
         await _appDbContext.SaveChangesAsync();
     }
     
-    public async Task Delete(int id)
+    public async Task DeleteAsync(int id)
     {
         var task = await _appDbContext.Tasks.FindAsync(id);
-        if (task == null)
-        {
-            throw new NullReferenceException("Task not found");
-        }
         
         _appDbContext.Tasks.Remove(task);
         await _appDbContext.SaveChangesAsync();

@@ -2,8 +2,10 @@
 
 public interface ITaskRepository
 {
-    Task Add(string title, string description, string status, int userId, DateTime doneAt);
-    Task<List<Models.Task>> GetByUserId(int id);
-    Task Update(string title, string description, string status, DateTime doneAt);
-    Task Delete(int id);
+    Task InsertAsync(Models.Task task);
+    Task<List<Models.Task>> GetByUserIdAsync(int id);
+    Task UpdateAsync(string title, string description, string status, DateTime doneAt);
+    Task DeleteAsync(int id);
+    Task<Models.Task> GetByTitleAsync(string title);
+    Task<Models.Task> GetByIdAsync(int id);
 }
