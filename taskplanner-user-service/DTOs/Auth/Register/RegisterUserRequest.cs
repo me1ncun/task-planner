@@ -2,7 +2,8 @@
 
 namespace taskplanner_user_service.DTOs;
 
-public record RegisterUserRequest(
-    [Required] string Email,
-    [Required] string Password
-);
+public class RegisterUserRequest
+{
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
+}

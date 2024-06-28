@@ -19,7 +19,10 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddSwagger(this IServiceCollection services)
     {
-        return services.AddSwaggerGen();
+        return services.AddSwaggerGen(c =>
+        {
+            c.SchemaFilter<SwaggerSkipPropertyFilter>();
+        });
     }
 
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -65,5 +68,10 @@ public static class ServiceCollectionExtension
     {
         return services
             .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    }
+    
+    public static IServiceCollection AddEmailService(this IServiceCollection services)
+    {
+        return services.AddScoped<EmailService>();
     }
 }

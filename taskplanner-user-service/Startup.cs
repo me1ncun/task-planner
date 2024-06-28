@@ -22,9 +22,9 @@ public class Startup
             .AddSwagger()
             .AddCorsPolicy()
             .AddKafka(Configuration)
-            .AddAutoMapper();
-
-
+            .AddAutoMapper()
+            .AddEmailService();
+        
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         

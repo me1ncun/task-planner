@@ -19,12 +19,6 @@ public class TaskService: ITaskService
     
     public async Task<AddTaskResponse> Add(AddTaskRequest request)
     {
-        var taskExist = _taskRepository.GetByTitleAsync(request.Title);
-        if (taskExist is not null)
-        {
-            throw new AlreadyExistException();
-        }
-
         var task = _mapper.Map<Models.Task>(request);
         
         await _taskRepository.InsertAsync(task);
@@ -35,18 +29,19 @@ public class TaskService: ITaskService
     
     public async Task<List<GetTaskResponse>> GetTasksByUserId(GetTaskRequest request)
     {
-        var tasks = _taskRepository.GetByUserIdAsync(request.Id);
+        var tasks = await _taskRepository.GetByUserIdAsync(request.Id);
         
         var tasksDto = _mapper.Map<List<GetTaskResponse>>(tasks);
+        
         return tasksDto;
     }
     
     public async Task<UpdateTaskResponse> Update(UpdateTaskRequest request)
     {
-        var task = _taskRepository.GetByTitleAsync(request.Title);
+        var task = await _taskRepository.GetByTitleAsync(request.Title);
         if (task is null)
         {
-            throw new EntityNotFoundException();
+            throw new NotFoundException();
         }
         
         await _taskRepository.UpdateAsync(request.Title, request.Description, request.Status, request.DoneAt);
@@ -57,10 +52,10 @@ public class TaskService: ITaskService
     
     public async Task<DeleteTaskResponse> Delete(DeleteTaskRequest request)
     {
-        var task = _taskRepository.GetByIdAsync(request.Id);
+        var task = await _taskRepository.GetByIdAsync(request.Id);
         if (task is null)
         {
-            throw new EntityNotFoundException();
+            throw new NotFoundException();
         }
         
         await _taskRepository.DeleteAsync(task.Id);

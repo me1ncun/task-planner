@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.DTOs;
+using taskplanner_user_service.Exceptions;
 using taskplanner_user_service.Services.Implementation;
 using taskplanner_user_service.Services.Interfaces;
 
@@ -15,46 +16,53 @@ public class AuthController: ControllerBase
     private readonly KafkaService _kafkaService;
     private readonly EmailService _emailService;
     private readonly IMapper _mapper;
+    private readonly ILogger<AuthController> _logger;
         
     public AuthController(
         IUserService userService,
         IHttpContextAccessor  contextAccessor,
         KafkaService kafkaService,
         EmailService emailService,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<AuthController> logger)
     {
         _userService = userService;
         _contextAccessor = contextAccessor;
         _kafkaService = kafkaService;
         _emailService = emailService;
         _mapper = mapper;
+        _logger = logger;
     }
     
     [HttpPost("/auth/login")]
-    public async Task<IActionResult> Login(LoginUserRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
     {
         try
         {
             var user = await _userService.Login(request);
-            
-            _contextAccessor.HttpContext.Response.Cookies.Append("token", user.Token,  new CookieOptions
+
+            _contextAccessor.HttpContext.Response.Cookies.Append("token", user.Token, new CookieOptions
             {
                 MaxAge = TimeSpan.FromMinutes(20),
                 HttpOnly = true,
-                Secure = true, 
-                SameSite = SameSiteMode.None 
+                Secure = true,
+                SameSite = SameSiteMode.None
             });
-            
+
             return Ok(user);
         }
-        catch (InvalidOperationException ex)
+        catch (EntityNotFoundException ex)
         {
-            return StatusCode(StatusCodes.Status401Unauthorized, new { message = ex.Message });
+            return NotFound(new { message = ex.Message });
+        }
+        catch (PasswordNotMatchException ex)
+        {
+            return Conflict(new { message = ex.Message });
         }
     }
     
     [HttpPost("/auth/register")]
-    public async Task<IActionResult> Register(RegisterUserRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
     {
         try
         {
@@ -76,7 +84,7 @@ public class AuthController: ControllerBase
 
             return Ok(user);
         }
-        catch (InvalidOperationException ex)
+        catch (AlreadyExistException ex)
         {
             return Conflict(new { message = ex.Message });
         }
@@ -89,14 +97,23 @@ public class AuthController: ControllerBase
     [HttpPost("/logout")]
     public IActionResult Logout()
     {
-        _contextAccessor.HttpContext.Response.Cookies.Delete("token", new CookieOptions
+        try
         {
-            MaxAge = TimeSpan.FromSeconds(1),
-            HttpOnly = true,
-            Secure = true, 
-            SameSite = SameSiteMode.None
-        });
+            _contextAccessor.HttpContext.Response.Cookies.Delete("token", new CookieOptions
+            {
+                MaxAge = TimeSpan.FromSeconds(1),
+                HttpOnly = true,
+                Secure = true, 
+                SameSite = SameSiteMode.None
+            });
         
-        return Ok();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogInformation("Failed to logout user");
+            
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+        }
     }
 }

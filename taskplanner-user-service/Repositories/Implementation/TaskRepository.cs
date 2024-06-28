@@ -37,14 +37,14 @@ public class TaskRepository: ITaskRepository
     
     public async Task<Models.Task> GetByTitleAsync(string title)
     {
-        var task = await _appDbContext.Tasks.FindAsync(title);
+        var task = await _appDbContext.Tasks.FirstAsync(x => x.Title == title);
         
         return task;
     }
     
     public async Task UpdateAsync(string title, string description, string status, DateTime doneAt)
     {
-        var task = await _appDbContext.Tasks.FindAsync(title);
+        var task = await GetByTitleAsync(title);
         
         task.Title = title;
         task.Description = description;

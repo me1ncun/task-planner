@@ -2,8 +2,9 @@
 
 namespace taskplanner_user_service.DTOs;
 
-public record LoginUserRequest(
-    [Required] string Email,
-    [Required] string Password,
-    [Required] string RepeatPassword
-    );
+public class LoginUserRequest
+{
+    [Required] public string Email { get; set; }
+    [Required] public string Password{ get; set; }
+    [Required] public string RepeatPassword { get; set; }
+}

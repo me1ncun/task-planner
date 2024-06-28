@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using taskplanner_user_service.DTOs;
+using taskplanner_user_service.DTOs.Auth;
 using taskplanner_user_service.Exceptions;
 using taskplanner_user_service.Helpers;
 using taskplanner_user_service.Models;
@@ -28,7 +29,7 @@ public class UserService: IUserService
     public async Task<RegisterUserResponse> Register(RegisterUserRequest request)
     {
         var userExist = await _userRepository.GetUserByEmailAsync(request.Email);
-        if (userExist is null)
+        if (userExist is not null)
         {
             throw new AlreadyExistException();
         }
@@ -93,7 +94,7 @@ public class UserService: IUserService
         return response;
     }
     
-    public async Task<List<GetTaskRequest>> GetAll()
+    public async Task<List<GetUserResponse>> GetAll()
     {
         var users = await _userRepository.GetAllAsync();
         
@@ -102,7 +103,20 @@ public class UserService: IUserService
             throw new EntityNotFoundException();
         }
         
-        var usersDto = _mapper.Map<List<GetTaskRequest>>(users);
+        var usersDto = _mapper.Map<List<GetUserResponse>>(users);
+        
         return usersDto;
+    }
+    
+    public int GetUserIdIfAuthenticated(ClaimsPrincipal user)
+    {
+        var userId = Int32.Parse(user.Claims.FirstOrDefault(x => x.Type == "userId")?.Value);
+
+        if (userId == null)
+        {
+            throw new InvalidOperationException("Invalid or expired token.");
+        }
+
+        return userId;
     }
 }
