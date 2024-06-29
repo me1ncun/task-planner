@@ -18,14 +18,8 @@ public class EmailController: ControllerBase
     [HttpPost("/email/send")]
     public void SendEmail(string to, string subject, string body)
     {
-        var message = new EmailMessage
-        {
-            To = to,
-            Subject = subject,
-            Body = body
-        };
+        var message = new EmailMessage(to, subject, body);
         
         _emailSenderService.SendEmail(message);
     }
-    
 }

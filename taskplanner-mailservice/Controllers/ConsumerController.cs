@@ -22,7 +22,7 @@ public class ConsumerController : ControllerBase
         {
             await _consumerService.StartAsync(CancellationToken.None);
         
-            return Ok("Слушатель запущен");
+            return Ok("Kafka listener started");
         }
         catch (Exception e)
         { 
