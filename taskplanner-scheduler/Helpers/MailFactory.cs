@@ -4,11 +4,11 @@ using taskplanner_scheduler.Services.Implementation;
 
 namespace taskplanner_scheduler.Helpers;
 
-public class MailHelper
+public class MailFactory
 {
     private readonly TaskService _taskService;
     
-    public MailHelper(TaskService taskService)
+    public MailFactory(TaskService taskService)
     {
         _taskService = taskService;
     }

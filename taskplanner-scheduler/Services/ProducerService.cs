@@ -11,7 +11,7 @@ public class ProducerService
 {
     private readonly KafkaSettings _kafkaSettings;
     private readonly UserService _userService;
-    private readonly MailHelper _mailHelper;
+    private readonly MailFactory _mailFactory;
     private readonly ILogger<ProducerService> _logger;
     private readonly IProducer<Null, string> _producer;
 
@@ -19,12 +19,12 @@ public class ProducerService
         IOptions<KafkaSettings> kafkaSettings,
         ILogger<ProducerService> logger,
         UserService userService,
-        MailHelper mailHelper)
+        MailFactory mailFactory)
     {
         _kafkaSettings = kafkaSettings.Value;
         _logger = logger;
         _userService = userService;
-        _mailHelper = mailHelper;
+        _mailFactory = mailFactory;
 
         var producerconfig = new ProducerConfig
         {
@@ -70,7 +70,7 @@ public class ProducerService
         
         foreach (var user in users)
         {
-            var emailMessage = await _mailHelper.CreateEmailMessage(user);
+            var emailMessage = await _mailFactory.CreateEmailMessage(user);
             
             SendMessage(emailMessage);
         }

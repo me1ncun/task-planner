@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.DTOs;
 using taskplanner_user_service.Exceptions;
@@ -69,15 +70,21 @@ public class TaskController : ControllerBase
     {
         try
         {
-            var request = new DeleteTaskRequest(id);
-            
+            var userId = _userService.GetUserIdIfAuthenticated(User);
+
+            var request = new DeleteTaskRequest(id, userId);
+
             await _taskService.Delete(request);
-            
+
             return Ok();
         }
         catch (NotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedException ex)
+        {
+            return StatusCode(Convert.ToInt32(HttpStatusCode.Forbidden), new { message = ex.Message });
         }
         catch (Exception ex)
         {

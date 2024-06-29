@@ -33,7 +33,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddMailHelper(this IServiceCollection services)
     {
         return services
-            .AddScoped<MailHelper>();
+            .AddScoped<MailFactory>();
     }
     
     public static IServiceCollection AddServicesAndRepositories(this IServiceCollection services)

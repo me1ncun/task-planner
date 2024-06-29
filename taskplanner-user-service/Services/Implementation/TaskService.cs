@@ -59,6 +59,10 @@ public class TaskService: ITaskService
         {
             throw new NotFoundException();
         }
+        if(task.UserId != request.UserId)
+        {
+            throw new UnauthorizedException();
+        }
         
         await _taskRepository.DeleteAsync(task.Id);
         

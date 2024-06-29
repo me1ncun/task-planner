@@ -58,7 +58,7 @@ namespace taskplanner_user_service.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
+        
         [HttpGet("/users")]
         public async Task<IActionResult> GetAll()
         {

@@ -3,5 +3,6 @@
 namespace taskplanner_user_service.DTOs;
 
 public record DeleteTaskRequest(
-    [Required] int Id
+    [Required] int Id,
+    [Required] int? UserId
     );
