@@ -4,28 +4,27 @@ using System.Text.Unicode;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using taskplanner_scheduler.Helpers;
-using taskplanner_scheduler.Models;
 using taskplanner_scheduler.Services.Implementation;
 using Task = System.Threading.Tasks.Task;
 
 public class ProducerService
 {
-    private readonly taskplanner_scheduler.Models.KafkaSettings _kafkaSettings;
+    private readonly KafkaSettings _kafkaSettings;
     private readonly UserService _userService;
     private readonly MailHelper _mailHelper;
     private readonly ILogger<ProducerService> _logger;
     private readonly IProducer<Null, string> _producer;
 
     public ProducerService(
-        IOptions<taskplanner_scheduler.Models.KafkaSettings> kafkaSettings,
+        IOptions<KafkaSettings> kafkaSettings,
+        ILogger<ProducerService> logger,
         UserService userService,
-        MailHelper mailHelper,
-        ILogger<ProducerService> logger)
+        MailHelper mailHelper)
     {
         _kafkaSettings = kafkaSettings.Value;
+        _logger = logger;
         _userService = userService;
         _mailHelper = mailHelper;
-        _logger = logger;
         
         var producerconfig = new ProducerConfig
         {
@@ -64,28 +63,16 @@ public class ProducerService
             _logger.LogError($"Error processing Kafka message: {ex.Message}");
         }
     }
-
-    public async Task SendDailyReports()
+    
+    public async Task SendDailyReport()
     {
         var users = await _userService.GetUsers();
         
         foreach (var user in users)
         {
-            var emailMessage = await CreateEmailMessage(user);
+            var emailMessage = await _mailHelper.CreateEmailMessage(user);
             
             SendMessage(emailMessage);
         }
-    }
-    
-    private async Task<EmailMessage> CreateEmailMessage(User user)
-    {
-        var message = new EmailMessage()
-        {
-            To = user.Email,
-            Subject = "Ежедневный отчет с сайта TaskPlanner",
-            Body = await _mailHelper.CreateMailBody(user)
-        };
-
-        return message;
     }
 }

@@ -8,22 +8,15 @@ namespace taskplanner_scheduler.Repositories;
 
 public class UserRepository
 {
-    private readonly IConfiguration _configuration;
-    private readonly string connectionString;
+    private readonly AppDbContext _context;
     
-    public UserRepository(IConfiguration configuration)
+    public UserRepository(AppDbContext context)
     {
-        _configuration = configuration;
-        connectionString = _configuration.GetConnectionString("Database");
+        _context = context;
     }
     
-    public async Task<IEnumerable<User>> GetAll()
+    public async Task<IEnumerable<User>> GetAllAsync()
     {
-        using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
-        {
-            string query = """SELECT * FROM users;""";
-
-            return await connection.QueryAsync<User>(query);
-        }
+        return await _context.Users.ToListAsync();
     }
 }

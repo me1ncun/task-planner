@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using taskplanner_scheduler.Database;
 using taskplanner_scheduler.Models;
 using Task = System.Threading.Tasks.Task;
 
@@ -7,18 +9,16 @@ namespace taskplanner_scheduler.Repositories;
 
 public class TaskRepository
 {
-    private readonly IConfiguration _configuration;
-    private readonly string sqlString;
+    private readonly AppDbContext _context;
     
-    public TaskRepository(IConfiguration configuration)
+    public TaskRepository(AppDbContext context)
     {
-        _configuration = configuration;
-        sqlString = _configuration.GetConnectionString("Database");
+        _context = context;
     }
     
-    public async Task<IEnumerable<taskplanner_scheduler.Models.Task>> GetUsersTask(User user)
+    public async Task<IEnumerable<taskplanner_scheduler.Models.Task>> GetUsersTasks(User user)
     {
-        using (NpgsqlConnection connection = new NpgsqlConnection(sqlString))
+        using (NpgsqlConnection connection = new NpgsqlConnection(_context.Database.GetDbConnection().ConnectionString))
         {
             string query = """SELECT tasks.id, tasks.title, tasks.description, tasks.status, tasks.user_id FROM tasks INNER JOIN users ON users.id = tasks.user_id  WHERE users.id = @id;""";
 

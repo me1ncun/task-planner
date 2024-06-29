@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RabbitMQ.Client.Exceptions;
 using taskplanner_scheduler.Helpers;
+using taskplanner_scheduler.Services.Implementation;
 
 namespace taskplanner_mailservice;
 
 [Route("[controller]")]
 [ApiController]
-public class TestProducerController : ControllerBase
+public class ProducerController : ControllerBase
 {
-    private readonly ProducerService _producerServiceService;
+    private readonly ProducerService _producerService;
     
-    public TestProducerController(ProducerService producerServiceService)
+    public ProducerController(
+        ProducerService producerService)
     {
-        _producerServiceService = producerServiceService;
+        _producerService = producerService;
     }
     
     [HttpPost("/kafka/send")]
@@ -20,7 +22,7 @@ public class TestProducerController : ControllerBase
     {
         try
         {
-            _producerServiceService.ProduceAsync(message);
+            _producerService.ProduceAsync(message);
             
             return Ok("Sended message to Kafka");
         }
@@ -35,9 +37,9 @@ public class TestProducerController : ControllerBase
     {
         try
         {
-            _producerServiceService.SendDailyReports();
+            _producerService.SendDailyReport();
             
-            return Ok("Sended message to Kafka");
+            return Ok("Sended daily report to Kafka");
         }
         catch (Exception e)
         {

@@ -17,31 +17,76 @@ public class MailHelper
     {
         var tasks = await _taskService.GetUsersTask(user);
 
-        var doneTasksList = tasks.Where(t => t.Status == "Done").ToList();
-        var notDoneTasksList = tasks.Where(t => t.Status == "Not done").ToList();
+        var todayDate = DateTime.Now.Date;
+        
+        var doneTodayTasks = tasks.Where(x => x.Status == "done" && x.DoneAt == todayDate).ToList();
+        var notDoneTasks = tasks.Where(x => x.Status == "notdone").ToList();
+        
+        var sb = new StringBuilder();
+        
+        sb.Append($"<h1>Добрый день, {user.Email}!</h1>");
+        
+        if (notDoneTasks.Count > 0 && doneTodayTasks.Count == 0)
+        {
+            sb.Append($"<h2>У вас осталось {tasks.Count()} несделанных задач:</h2>");
+            sb.Append("<ul>");
+            
+            foreach (var task in notDoneTasks)
+            {
+                sb.Append($"<li>{task.Title}</li>");
+            }
+            
+            sb.Append("</ul>");
+        }
+        
+        if(doneTodayTasks.Count > 0)
+        {
+            sb.Append($"<h2>За сегодня вы выполнили {doneTodayTasks.Count()} задач:</h2>");
+            sb.Append("<ul>");
+            
+            foreach (var task in doneTodayTasks)
+            {
+                sb.Append($"<li>{task.Title} - {task.DoneAt}</li>");
+            }
+            
+            sb.Append("</ul>");
+        }
+        
+        else if(doneTodayTasks.Count > 0 && notDoneTasks.Count > 0)
+        {
+            sb.Append($"<h2>За сегодня вы выполнили {doneTodayTasks.Count()} задач:</h2>");
+            sb.Append("<ul>");
+            
+            foreach (var task in doneTodayTasks)
+            {
+                sb.Append($"<li>{task.Title} - {task.DoneAt}</li>");
+            }
+            
+            sb.Append("</ul>");
+            
+            sb.Append($"<h2>У вас осталось {notDoneTasks.Count()} несделанных задач:</h2>");
+            sb.Append("<ul>");
+            
+            foreach (var task in notDoneTasks)
+            {
+                sb.Append($"<li>{task.Title}</li>");
+            }
+            
+            sb.Append("</ul>");
+        }
+        
+        return sb.ToString();
+    }
+    
+    public async Task<EmailMessage> CreateEmailMessage(User user)
+    {
+        var message = new EmailMessage()
+        {
+            To = user.Email,
+            Subject = "Ежедневный отчет с сайта TaskPlanner",
+            Body = await CreateMailBody(user)
+        };
 
-        string doneTasks = string.Join(", ", doneTasksList.Select(t => t.Title));
-        string notDoneTasks = string.Join(", ", notDoneTasksList.Select(t => t.Title));
-
-        string result;
-        if(notDoneTasksList.Count() > 0 && doneTasksList.Count() == 0)
-        {
-            result = $"У вас осталось {notDoneTasksList.Count()} несделанных задач. Список: {notDoneTasks}";
-        }
-        else if(doneTasksList.Count() >= 1 && notDoneTasksList.Count() == 0)
-        {
-            result = $"За сегодня вы выполнили {doneTasksList.Count()} задач. Список: {doneTasks}";
-        }
-        else if(doneTasksList.Count() >= 1 && notDoneTasksList.Count() >= 1)
-        {
-            result = $"За сутки вы выполнили {doneTasksList.Count()} задач, список: {doneTasks}." +
-                     $"У вас осталось  {notDoneTasksList.Count()} несделанных задач, список: {notDoneTasks}.";
-        }
-        else
-        {
-            result = "Не забывайте заходить на наш сайт и добавлять задачи!";
-        }
-
-        return result;
+        return message;
     }
 }
