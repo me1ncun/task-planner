@@ -52,9 +52,9 @@ public class ConsumerService : BackgroundService
 
             var message = consumeResult.Message.Value;
             
-            /*var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
+            var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
         
-            _emailSenderService.SendEmail(emailMessage);*/
+            _emailSenderService.SendEmail(emailMessage);
 
             _logger.LogInformation($"Received inventory update: {message}");
         }
