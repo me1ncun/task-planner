@@ -21,7 +21,7 @@ public class TaskRepository: ITaskRepository
         await _appDbContext.SaveChangesAsync();
     }
     
-    public async Task<List<Models.Task>> GetByUserIdAsync(int id)
+    public async Task<List<Models.Task>> GetByUserIdAsync(int? id)
     {
         var tasks = await _appDbContext.Tasks.Where(t => t.UserId == id).ToListAsync();
         
