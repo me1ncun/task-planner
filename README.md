@@ -61,7 +61,7 @@ ASP.NET Core приложение с двумя модулями - Coravel и и
 ```bash
 git clone https://github.com/me1ncun/task-planner.git
 ```
-- Перейти в каталог приложение
+- Перейти в каталог приложения
 ```bash
 cd task-planner
 ```
