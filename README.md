@@ -61,6 +61,12 @@ ASP.NET Core приложение с двумя модулями - Coravel и и
 ```bash
 git clone https://github.com/me1ncun/task-planner.git
 ```
+- Перейти в каталог приложение
+```bash
+cd task-planner
+```
+
+В .env файл вставить свои данные для настройки портов и подключению к базе данных.
 - Запустить docker-compose файл
 ```bash
 docker-compose up
