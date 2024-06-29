@@ -7,7 +7,7 @@ public class EntityNotFoundException: Exception
     {
     }
     
-    public EntityNotFoundException() : base(String.Format("Entity not found"))
+    public EntityNotFoundException() : base("Entity not found")
     {
     }
 }

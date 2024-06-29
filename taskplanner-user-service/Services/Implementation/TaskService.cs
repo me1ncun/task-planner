@@ -24,6 +24,7 @@ public class TaskService: ITaskService
         await _taskRepository.InsertAsync(task);
         
         var response = _mapper.Map<AddTaskResponse>(task);
+        
         return response;
     }
     
@@ -47,6 +48,7 @@ public class TaskService: ITaskService
         await _taskRepository.UpdateAsync(request.Title, request.Description, request.Status, request.DoneAt);
         
         var response = _mapper.Map<UpdateTaskResponse>(task);
+        
         return response;
     }
     
@@ -61,6 +63,7 @@ public class TaskService: ITaskService
         await _taskRepository.DeleteAsync(task.Id);
         
         var response = _mapper.Map<DeleteTaskResponse>(task);
+        
         return response;
     }
 }

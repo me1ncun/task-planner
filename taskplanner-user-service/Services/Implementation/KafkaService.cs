@@ -15,7 +15,9 @@ public class KafkaService
     private readonly ILogger<KafkaService> _logger;
     private readonly IProducer<Null, string> _producer;
 
-    public KafkaService(IOptions<KafkaSettings> kafkaSettings, ILogger<KafkaService> logger)
+    public KafkaService(
+        IOptions<KafkaSettings> kafkaSettings,
+        ILogger<KafkaService> logger)
     {
         _kafkaSettings = kafkaSettings.Value;
         _logger = logger;
@@ -26,18 +28,6 @@ public class KafkaService
         };
 
         _producer = new ProducerBuilder<Null, string>(producerconfig).Build();
-    }
-
-    public void SendMessage(object obj)
-    {        
-        var options = new JsonSerializerOptions
-        {
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
-            WriteIndented = true
-        };
-        var message = JsonSerializer.Serialize(obj, options);
-        
-        ProduceAsync(message);
     }
     
     public async Task ProduceAsync(string message)
@@ -54,5 +44,17 @@ public class KafkaService
         {
             _logger.LogError($"Error processing Kafka message: {ex.Message}");
         }
+    }
+    
+    public void SendMessage(object obj)
+    {        
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+            WriteIndented = true
+        };
+        var message = JsonSerializer.Serialize(obj, options);
+        
+        ProduceAsync(message);
     }
 }

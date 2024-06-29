@@ -7,7 +7,7 @@ public class PasswordNotMatchException: Exception
     {
     }
     
-    public PasswordNotMatchException() : base(String.Format("Passwords do not match"))
+    public PasswordNotMatchException() : base("Passwords do not match")
     {
     }
 }

@@ -7,7 +7,7 @@ public class AlreadyExistException: Exception
     {
     }
     
-    public AlreadyExistException() : base(String.Format("Entity already exists"))
+    public AlreadyExistException() : base("Entity already exists")
     {
     }
 }

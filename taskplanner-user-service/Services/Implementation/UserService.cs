@@ -45,6 +45,7 @@ public class UserService: IUserService
 
         var response = _mapper.Map<RegisterUserResponse>(user);
         response.Token = token;
+        
         return response;
     }
     
@@ -67,6 +68,7 @@ public class UserService: IUserService
         
         var token = _jwtProvider.GenerateToken(userExist);
         user.Token = token;
+        
         return user;
     }
     
@@ -91,13 +93,13 @@ public class UserService: IUserService
         await _userRepository.UpdatePasswordAsync(user.Email, user.Password);
         
         var response = _mapper.Map<UpdateUserResponse>(user);
+        
         return response;
     }
     
     public async Task<List<GetUserResponse>> GetAll()
     {
         var users = await _userRepository.GetAllAsync();
-        
         if (users is null)
         {
             throw new EntityNotFoundException();
@@ -108,11 +110,10 @@ public class UserService: IUserService
         return usersDto;
     }
     
-    public int GetUserIdIfAuthenticated(ClaimsPrincipal user)
+    public int? GetUserIdIfAuthenticated(ClaimsPrincipal user)
     {
-        var userId = Int32.Parse(user.Claims.FirstOrDefault(x => x.Type == "userId")?.Value);
-
-        if (userId == null)
+        int? userId = Int32.Parse(user.Claims.FirstOrDefault(x => x.Type == "userId")?.Value);
+        if (userId is null)
         {
             throw new InvalidOperationException("Invalid or expired token.");
         }

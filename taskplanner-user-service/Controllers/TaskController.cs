@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.DTOs;
+using taskplanner_user_service.Exceptions;
 using taskplanner_user_service.Services.Interfaces;
 
 namespace taskplanner_user_service.Controllers;
@@ -52,9 +53,13 @@ public class TaskController : ControllerBase
 
             return Ok();
         }
-        catch (Exception ex)
+        catch (NotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 
@@ -70,9 +75,13 @@ public class TaskController : ControllerBase
             
             return Ok();
         }
-        catch (Exception ex)
+        catch (NotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 }

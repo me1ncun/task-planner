@@ -9,6 +9,6 @@ public class AddTaskRequest{
     [Required] public string Title { get; set; }
     [Required] public string Description { get; set; }
     [Required] public string Status  { get; set; } 
-    [SwaggerIgnore] public int UserId { get; set; }
+    [SwaggerIgnore] public int? UserId { get; set; }
     [JsonIgnore] public DateTime DoneAt  { get; set; }
 }

@@ -11,5 +11,5 @@ public interface IUserService
     Task<LoginUserResponse> Login(LoginUserRequest request);
     Task<UpdateUserResponse> UpdatePassword(UpdateUserRequest request);
     Task<List<GetUserResponse>> GetAll();
-    int GetUserIdIfAuthenticated(ClaimsPrincipal user);
+    int? GetUserIdIfAuthenticated(ClaimsPrincipal user);
 }

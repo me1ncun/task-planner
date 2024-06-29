@@ -7,7 +7,7 @@ public class ThrownException: Exception
     {
     }
 
-    public ThrownException() : base(String.Format("An exception was thrown"))
+    public ThrownException() : base("An exception was thrown")
     {
     }
 }

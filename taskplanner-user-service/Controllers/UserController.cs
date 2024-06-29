@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using taskplanner_user_service.DTOs;
 using taskplanner_user_service.DTOs.Auth;
+using taskplanner_user_service.Exceptions;
 using taskplanner_user_service.Models;
 using taskplanner_user_service.Services.Interfaces;
 
@@ -22,18 +23,18 @@ namespace taskplanner_user_service.Controllers
         [HttpGet("/user")]
         public async Task<IActionResult> GetUser()
         {
-            var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId")?.Value;
+            var userIdClaim = Convert.ToInt32(User.Claims.FirstOrDefault(x => x.Type == "userId")?.Value);
             var userEmailClaim = User.Claims.FirstOrDefault(x => x.Type == "userEmail")?.Value;
 
             var user = new GetUserResponse()
             {
-                Id = Int32.Parse(userIdClaim),
+                Id = userIdClaim,
                 Email = userEmailClaim
             };
 
-            if (user == null)
+            if (user is null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Invalid or expired token." });
+                return StatusCode(StatusCodes.Status401Unauthorized, new { message = "Invalid or expired token." });
             }
 
             return Ok(user);
@@ -48,13 +49,13 @@ namespace taskplanner_user_service.Controllers
 
                 return Ok();
             }
-            catch (InvalidOperationException ex)
+            catch (EntityNotFoundException ex)
             {
-                return Conflict(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (PasswordNotMatchException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
 
