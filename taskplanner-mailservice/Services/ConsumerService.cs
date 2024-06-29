@@ -2,8 +2,7 @@
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using taskplanner_mailservice.Models;
-
-namespace taskplanner_mailservice.Services.Implementation;
+using taskplanner_mailservice.Services.Implementation;
 
 public class ConsumerService : BackgroundService
 {
@@ -53,9 +52,9 @@ public class ConsumerService : BackgroundService
 
             var message = consumeResult.Message.Value;
             
-            var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
+            /*var emailMessage = JsonSerializer.Deserialize<EmailMessage>(message);
         
-            _emailSenderService.SendEmail(emailMessage);
+            _emailSenderService.SendEmail(emailMessage);*/
 
             _logger.LogInformation($"Received inventory update: {message}");
         }

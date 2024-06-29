@@ -25,7 +25,7 @@ public class ProducerService
         _logger = logger;
         _userService = userService;
         _mailHelper = mailHelper;
-        
+
         var producerconfig = new ProducerConfig
         {
             BootstrapServers = _kafkaSettings.BootstrapServers,
