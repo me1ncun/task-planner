@@ -14,7 +14,7 @@ public class AuthController: ControllerBase
     private readonly IUserService _userService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly KafkaService _kafkaService;
-    private readonly EmailService _emailService;
+    private readonly EmailCreatorFactory _emailCreatorFactory;
     private readonly IMapper _mapper;
     private readonly ILogger<AuthController> _logger;
         
@@ -22,14 +22,14 @@ public class AuthController: ControllerBase
         IUserService userService,
         IHttpContextAccessor  contextAccessor,
         KafkaService kafkaService,
-        EmailService emailService,
+        EmailCreatorFactory emailCreatorFactory,
         IMapper mapper,
         ILogger<AuthController> logger)
     {
         _userService = userService;
         _contextAccessor = contextAccessor;
         _kafkaService = kafkaService;
-        _emailService = emailService;
+        _emailCreatorFactory = emailCreatorFactory;
         _mapper = mapper;
         _logger = logger;
     }
@@ -78,7 +78,7 @@ public class AuthController: ControllerBase
                 SameSite = SameSiteMode.None 
             });
                 
-            var greetingMessage = _emailService.CreateEmailMessage(request);
+            var greetingMessage = _emailCreatorFactory.CreateEmailMessage(request);
             
             _kafkaService.SendMessage(greetingMessage);
 

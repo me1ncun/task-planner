@@ -2,7 +2,7 @@
 
 namespace taskplanner_user_service.Services.Implementation;
 
-public class EmailService
+public class EmailCreatorFactory
 {
     public EmailMessage CreateEmailMessage(RegisterUserRequest request)
     {

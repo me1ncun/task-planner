@@ -72,6 +72,6 @@ public static class ServiceCollectionExtension
     
     public static IServiceCollection AddEmailService(this IServiceCollection services)
     {
-        return services.AddScoped<EmailService>();
+        return services.AddScoped<EmailCreatorFactory>();
     }
 }
