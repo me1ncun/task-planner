@@ -57,7 +57,7 @@ ASP.NET Core приложение с двумя модулями - Coravel и и
 Необходимо:
 
 - Установить Docker на локальную машину — https://docs.docker.com/get-docker/
-- Склонировать репозиторий task-planner
+- Склонировать репозиторий
 ```bash
 git clone https://github.com/me1ncun/task-planner.git
 ```
