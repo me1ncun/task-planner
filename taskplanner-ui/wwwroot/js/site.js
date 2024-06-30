@@ -1,4 +1,129 @@
-﻿function makeTaskDone(taskId) {
+﻿const hostApi = 'http://localhost:8080';
+
+$(document).ready(function () {
+
+/*   class User{
+        constructor(id, email){
+            this.id = id;
+            this.email = email;
+        }
+    }
+    
+    var user;
+    
+    var getUser = getAuthorizedUser().then(function (data) {
+         user = new User(data.id, data.email);
+         
+         console.log(user);
+    });
+    
+    function getAuthorizedUser(){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: hostApi + '/user',
+                type: 'GET',
+                contentType: 'application/json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function (data, textStatus, xhr) {
+                  /!*  console.log(data);*!/
+                   resolve(data); 
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                    reject(errorThrown);
+                }
+            });
+        });
+    }*/
+    
+    async function fetchData(){
+        const response = await fetch(hostApi + '/user');
+        const data = await response.json();
+        console.log(data);
+    }
+});
+//     var loginForm = $(".login-page");
+//     var registerForm = $(".registration-page");
+//     var resetPassForm = $(".reset-page");
+//     var registerRef = $("#registration-reference");
+//     var loginRef = $("#login-reference");
+//     var logoutRef = $("#logout-reference");
+//     var mainPage = $(".main-block");
+//     var usersEmail = $("#users-email");
+
+//     if (getJwtFromLocalStorage != null || getJwtFromLocalStorage !== '') {
+//         logoutRef.show();
+//         mainPage.show();
+//     }
+//     else {
+//         registerRef.show();
+//         loginRef.show();
+//         logoutRef.hide();
+//         mainPage.hide();
+//     }
+
+//     function logIn() {
+//         var password = $("#player-password-login").val();
+//         var email = $("#player-email-login").val();
+
+//         if (password == null || email == null) {
+//             alert('Data cannot be empty');
+//         }
+//         var account = {
+//             "email": email,
+//             "password": password,
+//             "repeatPassword": password
+//         };
+
+//         $.ajax({
+//             url: hostApi + '/auth/login',
+//             type: 'POST',
+//             contentType: 'application/json',
+//             data: JSON.stringify(account),
+//             xhrFields: {
+//                 withCredentials: true
+//             },
+//             success: function () {
+
+
+//                 // $("#registration-reference").hide();
+//                 // $("#login-reference").hide();
+//                 // $("#logout-reference").show();
+//                 // $(".main-block").show();
+//                 // $(".login-page").hide();
+
+//                 usersEmail.text(account.email).show();
+
+//                 taskOutput();
+
+//                 alert("You are successfully authorized");
+//             },
+//             error: function () {
+//                 alert("Password or email doesnt match, try again");
+//             }
+//         });
+//     }
+
+//     function showRegistrationForm() {
+//         registerForm.show();
+//         loginForm.hide();
+//         resetPassForm.hide();
+//     }
+
+//     function showLoginForm() {
+//         resetPassForm.hide();
+//         loginForm.show();
+//         registerForm.hide();
+//     }
+
+//     function getJwtFromLocalStorage() {
+//         return localStorage.getItem("token")
+//     }
+// });
+
+function makeTaskDone(taskId) {
     getTaskById(taskId)
         .then(function (task) {
 
@@ -273,14 +398,14 @@ function deleteTask(taskId) {
     });
 }
 
-
 function createDoneTaskBox(task) {
     var taskbox = '<div class="task-box">' +
         '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;" onclick="deleteTask(\'' + task.id + '\')"></img>' +
-        '<img src="photo/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
+        '<img src="icons/edit.png" style="width:20px; height: 20px; cursor: pointer;" onclick="editTask(\'' + task.id + '\')"></img>' +
+        '<img src="icons/bin.png" style="width:20px; height: 20px; cursor: pointer;" onclick="deleteTask(\'' + task.id + '\')"></img>' +
+        '<img src="icons/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
         '</div>' +
         '</div>';
 
@@ -302,8 +427,9 @@ function createUndoneTaskBox(task) {
         '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<img src="photo/bin.png" style="width:20px; height: 20px; cursor: pointer; padding-right: 4px;" onclick="deleteTask(\'' + task.id + '\')"></img>' +
-        '<img src="photo/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
+        '<img src="icons/edit.png" style="width:20px; height: 20px; cursor: pointer;" onclick="editTask(\'' + task.id + '\')"></img>' +
+        '<img src="icons/bin.png" style="width:20px; height: 20px; cursor: pointer;" onclick="deleteTask(\'' + task.id + '\')"></img>' +
+        '<img src="icons/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
         '</div>' +
         '</div>';
 
@@ -367,7 +493,11 @@ function logOut() {
 function createTask() {
     let taskResult = $("#task-isdone").prop("checked") ? "Done" : "Not done";
     var title = $(".task-name").val();
-    var description = $(".task-description").val()
+    var description = $(".task-description").val();
+    
+    if(description == ""){
+        description = "No description";
+    }
 
     var task = {
         "Title": title,
@@ -417,3 +547,68 @@ $(document).ready(function () {
     $(".login-page").hide();
     $(".main-block").hide();
 });
+
+
+
+function editTask(taskId) {
+    var task = {
+        "Id": parseInt(taskId)
+    };
+
+    openModal();
+
+    $.ajax({
+        url: 'http://localhost:8080/tasks',
+        type: 'PUT',
+        data: new URLSearchParams({
+            'id': task.Id,
+        }).toString(),
+        contentType: 'application/x-www-form-urlencoded',
+        xhrFields: {
+            withCredentials: true // Включает куки в запрос
+        },
+        success: function (textStatus, xhr) {
+
+            console.log("Your task has been deleted successfully");
+            taskOutput();
+
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.log('Error in Operation');
+        }
+    });
+}
+
+
+function openModal() {
+const backdrop = document.querySelector('#modal-backdrop');
+  document.addEventListener('click', modalHandler);
+
+  function modalHandler(evt) {
+    const modalBtnOpen = evt.target.closest('.js-modal');
+    if (modalBtnOpen) { // open btn click
+      const modalSelector = modalBtnOpen.dataset.modal;
+      showModal(document.querySelector(modalSelector));
+    }
+
+    const modalBtnClose = evt.target.closest('.modal-close');
+    if (modalBtnClose) { // close btn click
+      evt.preventDefault();
+      hideModal(modalBtnClose.closest('.modal-window'));
+    }
+
+    if (evt.target.matches('#modal-backdrop')) { // backdrop click
+      hideModal(document.querySelector('.modal-window.show'));
+    }
+  }
+
+  function showModal(modalElem) {
+    modalElem.classList.add('show');
+    backdrop.classList.remove('hidden');
+  }
+
+  function hideModal(modalElem) {
+    modalElem.classList.remove('show');
+    backdrop.classList.add('hidden');
+  }
+};
