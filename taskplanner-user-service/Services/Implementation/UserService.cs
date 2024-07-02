@@ -34,6 +34,11 @@ public class UserService: IUserService
             throw new AlreadyExistException();
         }
         
+        if(request.Password != request.ConfirmPassword)
+        {
+            throw new PasswordNotMatchException("Failed to login");
+        }
+        
         var user = _mapper.Map<User>(request);
         
         var hashedPassword = HashPasswordHelper.HashPassword(user.Password);
@@ -58,8 +63,7 @@ public class UserService: IUserService
         }
         
         var result = HashPasswordHelper.VerifyPassword(request.Password, userExist.Password);
-        
-        if(result == false)
+        if (result != true)
         {
             throw new PasswordNotMatchException("Failed to login");
         }

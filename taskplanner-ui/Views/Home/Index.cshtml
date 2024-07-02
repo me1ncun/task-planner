@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home";
 }
-<section class="login-page">
+<section class="login-page" style="display:none;">
     <div class="container mt-5">
         <div class="card-wrapper">
             <div class="card shadow-lg">
@@ -20,7 +20,7 @@
                         <div class="mb-3">
                             <div class="mb-2 w-100">
                                 <label class="text-muted" for="password">Password</label>
-                                <a onclick="" style="cursor: pointer;" class="float-end">
+                                <a style="cursor: pointer;" class="float-end" id="reset-reference">
                                     Forgot Password?
                                 </a>
                             </div>
@@ -35,7 +35,7 @@
                                 <input type="checkbox" name="remember" id="remember" class="form-check-input">
                                 <label for="remember" class="form-check-label">Remember Me</label>
                             </div>
-                            <button onclick="checkInfoAndLogin()" class="btn btn-primary ms-auto">
+                            <button type="button" class="login-button btn btn-primary ms-auto">
                                 Login
                             </button>
                         </div>
@@ -43,7 +43,7 @@
                 </div>
                 <div class="card-footer py-3 border-0">
                     <div class="text-center">
-                        Don't have an account? <button style="border: none; background: none;" onclick=""><u>Register</u></button>
+                        Don't have an account? <button id=".register-button" style="border: none; background: none;" type="button"><u>Register</u></button>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 
                         <div class="mb-3">
                             <label class="mb-2 text-muted" for="password">Repeat password</label>
-                            <input type="password" id="player-password-repeat" class="form-control" name="password" required>
+                            <input type="password" id="player-password-repeat-registration" class="form-control" name="password" required>
                             <div class="invalid-feedback">
                                 Repeat password is required
                             </div>
@@ -87,7 +87,7 @@
                         </p>
 
                         <div class="align-items-left justify-content-center">
-                            <button class="btn btn-primary ms-auto" onclick="checkPasswordAndRegister()">
+                            <button type="button" class="register-button btn btn-primary ms-auto">
                                 Register
                             </button>
                         </div>
@@ -95,7 +95,7 @@
                 </div>
                 <div class="card-footer py-3 border-0">
                     <div class="text-center">
-                        Already have an account? <button style="border: none; background: none;" onclick="showLoginForm()"><u>Login</u></button>
+                        Already have an account? <button style="border: none; background: none;"><u>Login</u></button>
                     </div>
                 </div>
             </div>
@@ -111,7 +111,9 @@
                     <h2 class="fs-4 card-title fw-bold mb-2">Reset your password</h2>
                     <div style="font-size: 18px; margin-bottom: 5px;">Strong passwords include numbers, letters, and punctuation marks</div>
                     <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
-                        <input id="player-email-login" style="display: none;" type="email" class="form-control" name="email" value="">
+
+                        <label class="mb-2 text-muted" for="email">Email</label>
+                        <input id="player-email-reset" type="email" class="form-control" name="email" value="">
 
                         <div class="mb-3">
                             <label class="mb-2 text-muted" for="password">Enter new password</label>
@@ -130,7 +132,7 @@
                         </div>
 
                         <div class="py-3 border-0">
-                            <button onclick="resetPassword()" class="btn btn-primary ms-auto">
+                            <button type="button" id="reset-password-button" class="btn btn-primary ms-auto">
                                 Reset password
                             </button>
                         </div>
@@ -172,9 +174,9 @@
                 <input type="text" class="task-name" placeholder="Buy cat food for Tom" name="task-name">
                 <textarea class="task-description"
                     placeholder="And look for an anti-mouse bowl in the store, because Jerry will take everything away from Tom again"></textarea>
-                <label class="task-is" for="task-isdone"><input type="checkbox" id="task-isdone" name="task-isdone">
+                <label for="task-isdone"><input type="checkbox" id="task-isdone" name="task-isdone">
                     Done </label>
-                <button class="btn btn-primary" style="width: 300px;" onclick="createTask()">Create</button>
+                <button class="btn btn-primary" id="create-task-button" style="width: 300px;">Create</button>
             </div>
         </div>
     </div>

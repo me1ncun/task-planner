@@ -18,8 +18,7 @@ namespace taskplanner_user_service.Controllers
         {
             _userService = userService;
         }
-
-        [Authorize]
+        
         [HttpGet("/user")]
         public async Task<IActionResult> GetUser()
         {

@@ -19,5 +19,5 @@ public class Task
     [ForeignKey("User")]
     public int UserId { get; set; }
     [Column("done_at")]
-    public DateTime DoneAt { get; set; }
+    public DateTime? DoneAt { get; set; }
 }

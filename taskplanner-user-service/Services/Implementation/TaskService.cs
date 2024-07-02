@@ -21,6 +21,15 @@ public class TaskService: ITaskService
     {
         var task = _mapper.Map<Models.Task>(request);
         
+        if(task.Status == "Done")
+        {
+            task.DoneAt = DateTime.Now.ToUniversalTime();
+        }
+        else
+        {
+            task.DoneAt = DateTime.Parse("0001-01-01T00:00:00Z");
+        }
+        
         await _taskRepository.InsertAsync(task);
         
         var response = _mapper.Map<AddTaskResponse>(task);
