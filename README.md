@@ -73,3 +73,12 @@ docker-compose up
 ```
 - Страница с документацией будет доступна по ссылке: http://localhost:8080/swagger/index.html
 
+## Интерфейс приложения
+
+### Login page
+![photo_1.jpg](Screenshots/login.jpg)
+### Home page
+![photo_2.jpg](Screenshots/main.jpg)
+### Edit task page
+![photo_3.jpg](Screenshots/edit-task.jpg)
+
