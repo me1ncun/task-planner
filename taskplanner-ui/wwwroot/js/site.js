@@ -14,6 +14,7 @@ $(document).ready(function () {
     var registerButton = $(".register-button");
     var createTaskButton = $("#create-task-button");
     var resetPassButton = $("#reset-password-button");
+    var error = $(".error-message");
 
     async function fetchData() {
         try {
@@ -73,7 +74,7 @@ $(document).ready(function () {
         logIn();
     });
 
-    $(registerButton).click(function () {
+    $(registerButton,).click(function () {
         register();
     });
 
@@ -84,11 +85,11 @@ $(document).ready(function () {
     $(createTaskButton).click(function () {
         createTask();
     });
-    
+
     $(resetPassButton).click(function () {
         resetPassword();
     });
-    
+
 
     function createTask() {
         var title = $(".task-name").val();
@@ -161,11 +162,27 @@ $(document).ready(function () {
                 console.log("You are successfully authorized" + " " + account.email);
                 fetchData();
             },
-            error: function () {
-                console.log("Password or email doesnt match, try again");
+            error: function (textStatus) {
+                $(error).text(formatErrorMessage(textStatus));
             }
         });
     };
+
+    function formatErrorMessage(textStatus) {
+        if (textStatus.status === 0) {
+            return ('Not connected.\nPlease verify your network connection.');
+        } else if (textStatus.status === 404) {
+            return ('User not found, try again.');
+        } else if (textStatus.status === 401) {
+            return ('Sorry!! You session has expired. Please login to continue access.');
+        } else if (textStatus.status === 500) {
+            return ('Internal Server Error.');
+        } else if (textStatus.status === 409) {
+            return ('Password does not match');
+        } else {
+            return ('Unknown error occured. Please try again.');
+        }
+    }
 
     function register() {
         var email = $("#player-email-registration").val();
@@ -194,8 +211,8 @@ $(document).ready(function () {
                 console.log("Your account has been created successfully");
                 fetchData();
             },
-            error: function () {
-                console.log("Error in Operation");
+            error: function (textStatus) {
+                $(error).text(formatErrorMessage(textStatus));
             }
         });
     }
@@ -222,17 +239,62 @@ $(document).ready(function () {
                 resetPassForm.hide();
                 console.log("Your password has been changed");
             },
-            error: function () {
-                console.log('Error in Operation');
+            error: function (textStatus) {
+                $(error).text(formatErrorMessage(textStatus));
             }
         });
     }
 
-    function editTask(taskId) {
-        // code
-    }
+    fetchData();
+})
+;
 
-    function swithTaskStatus(task) {
+function swithTaskStatus(task) {
+    var taskDecoded = JSON.parse(decodeURIComponent(task));
+    var status = taskDecoded.status == "Done" ? "Not done" : "Done";
+    taskDecoded.status = status;
+
+    $.ajax({
+        url: hostApi + "/task",
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(taskDecoded),
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function () {
+            console.log("Task status has been switched successfully");
+            tasksOutput();
+        },
+        error: function (texStatus) {
+            console.log("Error in Operation");
+        }
+    });
+}
+
+function editTask(task) {
+    $('#myModal').modal('show');
+
+    var taskDecoded = JSON.parse(decodeURIComponent(task));
+    console.log(taskDecoded);
+
+    $('#save-update').on('click', function () {
+        if ($('#task-name').val() == "" || $('#task-description').val() == "") {
+            alert('Data cannot be empty');
+        }
+
+        var title = $('#task-title-update').val();
+        var description = $('#task-description-update').val();
+        var isDone = $('#task-isdone-update').prop("checked");
+        var status = isDone ? "Done" : "Not done";
+
+        var task = {
+            "title": title,
+            "description": description,
+            "status": status,
+            "doneAt": taskDecoded.doneAt
+        };
+
         $.ajax({
             url: hostApi + "/task",
             type: 'PUT',
@@ -242,19 +304,15 @@ $(document).ready(function () {
                 withCredentials: true
             },
             success: function () {
-                console.log("Task status has been switched successfully");
-                fetchData();
+                console.log("Task was updated successfully");
+                tasksOutput();
             },
-            error: function () {
+            error: function (texStatus) {
                 console.log("Error in Operation");
             }
         });
-    }
-
-
-    fetchData();
-})
-;
+    });
+}
 
 function tasksOutput() {
     $.ajax({
@@ -290,13 +348,14 @@ function tasksOutput() {
 }
 
 function createDoneTaskBox(task) {
+    var taskJs = encodeURIComponent(JSON.stringify(task));
     var taskbox = '<div class="task-box">' +
         '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<img src="icons/edit.png" style="width:20px; height: 20px; cursor: pointer;" onclick="editTask(\'' + task.id + '\')"></img>' +
+        '<img src="icons/edit.png" style="width:20px; height: 20px; cursor: pointer;" id="edit-task" onclick="editTask(\'' + taskJs + '\')"></img>' +
         '<img src="icons/bin.png" style="width:20px; height: 20px; cursor: pointer;" id="delete-button" onclick="deleteTask(\'' + task.id + '\')"></img>' +
-        '<img src="icons/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
+        '<img src="icons/plus-button.png" style="width:22px; height: 22px; cursor: pointer;" onclick="swithTaskStatus(\'' + taskJs + '\')"></img>' +
         '</div>' +
         '</div>';
 
@@ -304,13 +363,14 @@ function createDoneTaskBox(task) {
 }
 
 function createUndoneTaskBox(task) {
+    var taskJs = encodeURIComponent(JSON.stringify(task));
     var taskbox = '<div class="task-box">' +
         '<div class="task-box-name"><b>' + task.title + '</b></div>' +
         '<div class="task-box-description">' + task.description + '</div>' +
         '<div class="flex-container-buttons">' +
-        '<img src="icons/edit.png" style="width:20px; height: 20px; cursor: pointer;" onclick="editTask(\'' + task.id + '\')"></img>' +
+        '<img src="icons/edit.png" style="width:20px; height: 20px; cursor: pointer;" id="edit-task" onclick="editTask(\'' + taskJs + '\')"></img>' +
         '<img src="icons/bin.png" style="width:20px; height: 20px; cursor: pointer;" id="delete-button" onClick="deleteTask(\'' + task.id + '\')"></img>' +
-        '<img src="icons/plus-button.png" style="width:22px; height: 22px; cursor: pointer;"></img>' +
+        '<img src="icons/plus-button.png" style="width:22px; height: 22px; cursor: pointer;" onclick="swithTaskStatus(\'' + taskJs + '\')"></img>' +
         '</div>' +
         '</div>';
 
@@ -343,179 +403,3 @@ function deleteTask(taskId) {
         }
     });
 }
-
-/*
-function makeTaskDone(taskId) {
-    getTaskById(taskId)
-        .then(function (task) {
-
-            var copiedTask = Object.assign({}, task);
-            copiedTask.id = parseInt(taskId) + 1;
-            copiedTask.isDone = "true";
-
-            var element = document.getElementById('users-email');
-
-            copiedTask.AuthorEmail = element.innerText;
-
-
-            createTaskByTask(copiedTask);
-
-            deleteTask(taskId);
-
-            //calculateNewMinus();
-            //calculateDonePlus();
-
-            var taskbox = createDoneTaskBox(copiedTask);
-
-            // Append the task boxes to a container (adjust container selector accordingly)
-            $(".tasks-list-done").append(taskbox);
-        })
-        .catch(function (error) {
-            console.error('Error:', error);
-        });
-}
-
-function makeTaskUndone(taskId) {
-    getTaskById(taskId)
-        .then(function (task) {
-            task.isDone = true;  // Assuming IsDone is a boolean
-
-            var copiedTask = Object.assign({}, task);
-            copiedTask.id = parseInt(taskId) + 1;
-            copiedTask.isDone = "false";
-            //
-
-            var element = document.getElementById('users-email');
-            var value = element.innerText; // или element.textContent;
-            //
-            copiedTask.AuthorEmail = value;
-            //
-
-            createTaskByTask(copiedTask);
-
-            deleteTask(taskId);
-
-            //calculateDoneMinus();
-            //calculateNewPlus();
-
-            var taskbox = createUndoneTaskBox(copiedTask);
-
-            // Append the task boxes to a container (adjust container selector accordingly)
-            $(".tasks-list-new").append(taskbox);
-        })
-        .catch(function (error) {
-            console.error('Error:', error);
-        });
-}
-
-
-function createTaskByTask(task) {
-
-    var task = {
-        "id": task.id,
-        "name": task.name,
-        "description": task.description,
-        "isDone": task.isDone,
-        "authorEmail": task.AuthorEmail
-    };
-
-    $.ajax({
-        url: 'https://localhost:7201/task',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(task),
-        success: function (data, textStatus, xhr) {
-
-            console.log("Your task has been created successfully");
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log('Error in Operation');
-        }
-    });
-}
-
-function getTaskById(taskId) {
-    var task = {
-        "Id": parseInt(taskId)
-    };
-
-    return new Promise(function (resolve, reject) {
-        $.ajax({
-            url: 'https://localhost:7201/task/' + task.Id,
-            type: 'GET',
-            contentType: 'application/x-www-form-urlencoded',
-            success: function (data, textStatus, xhr) {
-                // Обработка успешного запроса
-                console.log('Task:', data);
-                resolve(data); // Резолвим Promise с полученными данными
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log('Error in Operation');
-                reject(errorThrown); // Реджектим Promise с ошибкой
-            }
-        });
-    });
-};
-
-function editTask(taskId) {
-    var task = {
-        "Id": parseInt(taskId)
-    };
-
-    openModal();
-
-    $.ajax({
-        url: 'http://localhost:8080/tasks',
-        type: 'PUT',
-        data: new URLSearchParams({
-            'id': task.Id,
-        }).toString(),
-        contentType: 'application/x-www-form-urlencoded',
-        xhrFields: {
-            withCredentials: true // Включает куки в запрос
-        },
-        success: function (textStatus, xhr) {
-
-            console.log("Your task has been deleted successfully");
-            taskOutput();
-
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.log('Error in Operation');
-        }
-    });
-}
-
-
-function openModal() {
-    const backdrop = document.querySelector('#modal-backdrop');
-    document.addEventListener('click', modalHandler);
-
-    function modalHandler(evt) {
-        const modalBtnOpen = evt.target.closest('.js-modal');
-        if (modalBtnOpen) { // open btn click
-            const modalSelector = modalBtnOpen.dataset.modal;
-            showModal(document.querySelector(modalSelector));
-        }
-
-        const modalBtnClose = evt.target.closest('.modal-close');
-        if (modalBtnClose) { // close btn click
-            evt.preventDefault();
-            hideModal(modalBtnClose.closest('.modal-window'));
-        }
-
-        if (evt.target.matches('#modal-backdrop')) { // backdrop click
-            hideModal(document.querySelector('.modal-window.show'));
-        }
-    }
-
-    function showModal(modalElem) {
-        modalElem.classList.add('show');
-        backdrop.classList.remove('hidden');
-    }
-
-    function hideModal(modalElem) {
-        modalElem.classList.remove('show');
-        backdrop.classList.add('hidden');
-    }
-};*/
