@@ -115,6 +115,7 @@ $(document).ready(function () {
                 console.log("Your task has been created successfully");
                 $(".task-name").val("");
                 $(".task-description").val("");
+                $("#task-isdone").prop("checked", false);
                 fetchData();
             },
             error: function () {
@@ -306,6 +307,9 @@ function editTask(task) {
                 withCredentials: true
             },
             success: function () {
+                $('#task-title-update').val("");
+                $('#task-description-update').val("");
+                $('#task-isdone-update').prop("checked", false);
                 $('#myModal').modal('hide');
                 console.log("Task was updated successfully");
                 tasksOutput();
