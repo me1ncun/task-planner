@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using taskplanner_user_service.DTOs;
 using taskplanner_user_service.Exceptions;
+using taskplanner_user_service.Helpers;
 using taskplanner_user_service.Repositories.Interfaces;
 using taskplanner_user_service.Services.Interfaces;
+using Task = taskplanner_user_service.Models.Task;
 
 namespace taskplanner_user_service.Services.Implementation;
 
@@ -21,14 +23,7 @@ public class TaskService: ITaskService
     {
         var task = _mapper.Map<Models.Task>(request);
         
-        if(task.Status == "Done")
-        {
-            task.DoneAt = DateTime.Now.ToUniversalTime();
-        }
-        else
-        {
-            task.DoneAt = DateTime.Parse("0001-01-01T00:00:00Z");
-        }
+        task.DoneAt = DateHelper.GetDateTimeByStatus(request.Status);
         
         await _taskRepository.InsertAsync(task);
         
@@ -48,13 +43,17 @@ public class TaskService: ITaskService
     
     public async Task<UpdateTaskResponse> Update(UpdateTaskRequest request)
     {
-        var task = await _taskRepository.GetByTitleAsync(request.Title);
-        if (task is null)
+        var taskExist = await _taskRepository.GetByTitleAsync(request.Title);
+        if (taskExist is null)
         {
             throw new NotFoundException();
         }
+
+        var task = _mapper.Map<Task>(request);
         
-        await _taskRepository.UpdateAsync(request.Title, request.Description, request.Status, request.DoneAt);
+        task.DoneAt = DateHelper.GetDateTimeByStatus(request.Status);
+        
+        await _taskRepository.UpdateAsync(task.Title, task.Description, task.Status, task.DoneAt);
         
         var response = _mapper.Map<UpdateTaskResponse>(task);
         
@@ -63,13 +62,16 @@ public class TaskService: ITaskService
 
     public async Task<PutTaskResponse> Update(PutTaskRequest request)
     {
-        var task = await _taskRepository.GetByIdAsync(request.Id);
-        if (task is null)
+        var taskExist = await _taskRepository.GetByIdAsync(request.Id);
+        if (taskExist is null)
         {
             throw new NotFoundException();
         }
+
+        var task = _mapper.Map<Task>(request);
+        task.DoneAt = DateHelper.GetDateTimeByStatus(request.Status);
         
-        await _taskRepository.UpdateAsync(request.Id, request.Title, request.Description, request.Status, request.DueDate);
+        await _taskRepository.UpdateAsync(task.Id, task.Title, task.Description, task.Status, task.DoneAt);
         
         var response = _mapper.Map<PutTaskResponse>(task);
         

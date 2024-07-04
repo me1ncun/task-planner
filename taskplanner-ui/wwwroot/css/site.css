@@ -69,7 +69,6 @@ body {
     width: 385px;
     background-color: lavender;
     border-radius: 8px;
-    /* background-color: #008000; */
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -77,7 +76,6 @@ body {
 }
 
 .flex-item-content {
-    /* background-color: #FFA500; */
     background-color: lavender;
     padding: 20px;
     border-radius: 8px;
@@ -211,6 +209,53 @@ body {
     display: none;
 }
 
+#password-warning{
+    font-size: 18px;
+    margin-bottom: 5px;"
+}
+
+.div-body{
+    margin-bottom: 15px;
+}
+
+.label-update{
+    display: block;
+    font-weight: bold;"
+}
+
+#task-title-update{
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;"
+}
+
+#task-description-update{
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#logo{
+    width:200px;
+    height: 70px;
+    cursor: pointer;
+}
+
+.reference{
+    cursor: pointer;
+    font-size: larger;
+}
+
+.clear-button{
+    border: none;
+    background: none;
+}
+
+#create-task-button{
+    width: 300px;
+}
 
 .error-message{
     color: red;

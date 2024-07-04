@@ -1,20 +1,29 @@
 ﻿const hostApi = 'http://localhost:8080';
 $(document).ready(function () {
 
-    var loginForm = $(".login-page");
-    var registerForm = $(".registration-page");
-    var resetPassForm = $(".reset-page");
+    // pages 
+    var loginPage = $(".login-page");
+    var registerPage = $(".registration-page");
+    var changePassPage = $(".reset-page");
+    var mainPage = $(".main-block");
+    
+    // error section
+    var error = $(".error-message");
+    
+    // refferences
     var registerRef = $("#registration-reference");
     var loginRef = $("#login-reference");
     var logoutRef = $("#logout-reference");
-    var mainPage = $(".main-block");
-    var usersEmail = $("#users-email");
-    var resetPassRef = $("#reset-reference");
+    var changePassRef = $("#reset-reference");
+    
+    // user email display
+    var userEmail = $("#users-email");
+    
+    // buttons
     var loginButton = $(".login-button");
     var registerButton = $(".register-button");
     var createTaskButton = $("#create-task-button");
-    var resetPassButton = $("#reset-password-button");
-    var error = $(".error-message");
+    var changePassButton = $("#reset-password-button");
 
     async function fetchData() {
         try {
@@ -24,72 +33,40 @@ $(document).ready(function () {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            
             const data = await response.json();
-
-            console.log(data);
+            console.log('Data from jwt token' + data);
+            
             if (data.email != null && data.email != "") {
-                usersEmail.text(data.email).show();
+                userEmail.text(data.email).show();
                 registerRef.hide();
                 loginRef.hide();
                 logoutRef.show();
                 mainPage.show();
-                registerForm.hide();
-                loginForm.hide();
+                registerPage.hide();
+                loginPage.hide();
                 tasksOutput();
             } else {
-                usersEmail.hide();
+                userEmail.hide();
                 registerRef.show();
                 loginRef.show();
                 logoutRef.hide();
                 mainPage.hide();
             }
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching data from jwt token:', error);
         }
     };
 
     function showForm(formToShow) {
         // Скрываем все формы
-        $(loginForm).hide();
-        $(registerForm).hide();
-        $(resetPassForm).hide();
+        $(loginPage).hide();
+        $(registerPage).hide();
+        $(changePassPage).hide();
 
         // Показываем нужную форму
         $(formToShow).show();
     }
-
-    $(registerRef).click(function () {
-        showForm('.registration-page');
-    });
-
-    $(loginRef).click(function () {
-        showForm('.login-page');
-    });
-
-    $(resetPassRef).click(function () {
-        showForm('.reset-page');
-    })
-
-    $(loginButton).click(function () {
-        logIn();
-    });
-
-    $(registerButton,).click(function () {
-        register();
-    });
-
-    $(logoutRef).click(function () {
-        logOut();
-    });
-
-    $(createTaskButton).click(function () {
-        createTask();
-    });
-
-    $(resetPassButton).click(function () {
-        resetPassword();
-    });
-
 
     function createTask() {
         var title = $(".task-name").val();
@@ -221,10 +198,7 @@ $(document).ready(function () {
         var newPassword = $("#player-password-reset").val();
         var confirmPassword = $("#player-password-repeat-reset").val();
         var email = $("#player-email-reset").val();
-
-        if (newPassword != confirmPassword) {
-            console.log("Passwords do not match");
-        }
+        
         var account = {
             "forgottenPassword": forgottenPassword,
             "email": email,
@@ -237,7 +211,7 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify(account),
             success: function () {
-                resetPassForm.hide();
+                changePassPage.hide();
                 console.log("Your password has been changed");
             },
             error: function (textStatus) {
@@ -246,20 +220,56 @@ $(document).ready(function () {
         });
     }
 
+    $(registerRef).click(function () {
+        showForm('.registration-page');
+    });
+
+    $(loginRef).click(function () {
+        showForm('.login-page');
+    });
+
+    $(changePassRef).click(function () {
+        showForm('.reset-page');
+    })
+
+    $(loginButton).click(function () {
+        logIn();
+    });
+
+    $(registerButton,).click(function () {
+        register();
+    });
+
+    $(logoutRef).click(function () {
+        logOut();
+    });
+
+    $(createTaskButton).click(function () {
+        createTask();
+    });
+
+    $(changePassButton).click(function () {
+        resetPassword();
+    });
+
     fetchData();
-})
-;
+});
 
 function swithTaskStatus(task) {
     var taskDecoded = JSON.parse(decodeURIComponent(task));
     var status = taskDecoded.status == "Done" ? "Not done" : "Done";
-    taskDecoded.status = status;
+    
+    var task = {
+        "title": taskDecoded.title,
+        "description": taskDecoded.description,
+        "status": status,
+    }
 
     $.ajax({
         url: hostApi + "/task",
         type: 'PUT',
         contentType: 'application/json',
-        data: JSON.stringify(taskDecoded),
+        data: JSON.stringify(task),
         xhrFields: {
             withCredentials: true
         },
@@ -267,7 +277,7 @@ function swithTaskStatus(task) {
             console.log("Task status has been switched successfully");
             tasksOutput();
         },
-        error: function (texStatus) {
+        error: function () {
             console.log("Error in Operation");
         }
     });
@@ -283,19 +293,18 @@ function editTask(task) {
         if ($('#task-name').val() == "" || $('#task-description').val() == "") {
             alert('Data cannot be empty');
         }
-
-        var id = taskDecoded.id;
+        
         var title = $('#task-title-update').val();
         var description = $('#task-description-update').val();
         var isDone = $('#task-isdone-update').prop("checked");
+        
         var status = isDone ? "Done" : "Not done";
 
         var task = {
-            "id": id,
+            "id": taskDecoded.id,
             "title": title,
             "description": description,
             "status": status,
-            "doneAt": taskDecoded.doneAt
         };
 
         $.ajax({
@@ -314,7 +323,7 @@ function editTask(task) {
                 console.log("Task was updated successfully");
                 tasksOutput();
             },
-            error: function (texStatus) {
+            error: function () {
                 console.log("Error in Operation");
             }
         });
@@ -345,8 +354,8 @@ function tasksOutput() {
                     $(".tasks-list-new").append(taskbox);
                 }
             }
-            calcNewTasks();
-            calcDoneTasks();
+            countNewTasks();
+            countDoneTasks();
         },
         error: function () {
             console.log('Error in Operation');
@@ -384,16 +393,6 @@ function createUndoneTaskBox(task) {
     return taskbox;
 }
 
-function calcNewTasks() {
-    var length = $('.tasks-list-new > div').length;
-    $("#calculatorNew").text(length);
-}
-
-function calcDoneTasks() {
-    var length = $('.tasks-list-done > div').length;
-    $("#calculatorDone").text(length);
-}
-
 function deleteTask(taskId) {
     $.ajax({
         url: hostApi + '/task/' + taskId,
@@ -409,4 +408,24 @@ function deleteTask(taskId) {
             console.log("Error in Operation");
         }
     });
+}
+
+function countNewTasks() {
+    var length = $('.tasks-list-new > div').length;
+    $("#calculatorNew").text(length);
+}
+
+function countDoneTasks() {
+    var length = $('.tasks-list-done > div').length;
+    $("#calculatorDone").text(length);
+}
+
+function showRegisterPage() {
+    $('.login-page').hide();
+    $('.registration-page').show();
+}
+
+function showLoginPage() {
+    $('.login-page').show();
+    $('.registration-page').hide();
 }

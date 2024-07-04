@@ -9,7 +9,7 @@
                     <h1 class="fs-4 card-title fw-bold mb-4">Login</h1>
                     <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="email">E-Mail Address</label>
+                            <label class="mb-2 text-muted" for="player-email-login">Email Address</label>
                             <input id="player-email-login" type="email" class="form-control" name="email" placeholder="sample@example.com" required
                                    autofocus>
                             <div class="invalid-feedback">
@@ -19,7 +19,7 @@
 
                         <div class="mb-3">
                             <div class="mb-2 w-100">
-                                <label class="text-muted" for="password">Password</label>
+                                <label class="text-muted" for="reset-reference">Password</label>
                                 <a style="cursor: pointer;" class="float-end" id="reset-reference">
                                     Forgot Password?
                                 </a>
@@ -45,7 +45,7 @@
                 <div class="card-footer py-3 border-0">
                     <div class="text-center">
                         Don't have an account?
-                        <button id="register-ref" onclick="showRegisterForm()" style="border: none; background: none;" type="button">
+                        <button id="register-ref" class="clear-button" onclick="showRegisterPage()" type="button">
                             <u>Register</u>
                         </button>
                     </div>
@@ -63,7 +63,7 @@
                     <h1 class="fs-4 card-title fw-bold mb-4">Register</h1>
                     <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="email">E-Mail Address</label>
+                            <label class="mb-2 text-muted" for="player-email-registration">E-Mail Address</label>
                             <input type="email" id="player-email-registration" class="form-control" name="email" placeholder="sample@example.com" required>
                             <div class="invalid-feedback">
                                 Email is invalid
@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="password">Password</label>
+                            <label class="mb-2 text-muted" for="player-password-registration">Password</label>
                             <input type="password" id="player-password-registration" class="form-control" name="password" required>
                             <div class="invalid-feedback">
                                 Password is required
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="password">Repeat password</label>
+                            <label class="mb-2 text-muted" for="player-password-repeat-registration">Repeat password</label>
                             <input type="password" id="player-password-repeat-registration" class="form-control" name="password" required>
                             <div class="invalid-feedback">
                                 Repeat password is required
@@ -101,7 +101,7 @@
                 <div class="card-footer py-3 border-0">
                     <div class="text-center">
                         Already have an account?
-                        <button id="login-ref" onclick="showLoginForm()" type="button" style="border: none; background: none;">
+                        <button id="login-ref" class="clear-button" onclick="showLoginPage()" type="button">
                             <u>Login</u>
                         </button>
                     </div>
@@ -117,19 +117,19 @@
             <div class="card shadow-lg">
                 <div class="card-body p-5">
                     <h2 class="fs-4 card-title fw-bold mb-2">Reset your password</h2>
-                    <div style="font-size: 18px; margin-bottom: 5px;">Strong passwords include numbers, letters, and punctuation marks</div>
+                    <div id="password-warning">Strong passwords include numbers, letters, and punctuation marks</div>
                     <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
-
-                        <label class="mb-2 text-muted" for="email">Email</label>
-                        <input id="player-email-reset" type="email" class="form-control" name="email" value="">
-
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="password">Enter forgotten password</label>
+                        <label class="mb-2 text-muted" for="player-email-reset">Email</label>
+                        <input id="player-email-reset" type="email" class="form-control" name="email" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label class="mb-2 text-muted" for="player-password-forgotten">Enter forgotten password</label>
                             <input type="password" id="player-password-forgotten" class="form-control">
                         </div>
 
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="password">Enter new password</label>
+                            <label class="mb-2 text-muted" for="player-password-reset">Enter new password</label>
                             <input type="password" id="player-password-reset" class="form-control" name="password" required>
                             <div class="invalid-feedback">
                                 Password is required
@@ -137,7 +137,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="mb-2 text-muted" for="password">Confirm new password</label>
+                            <label class="mb-2 text-muted" for="player-password-repeat-reset">Confirm new password</label>
                             <input type="password" id="player-password-repeat-reset" class="form-control" name="password" required>
                             <div class="invalid-feedback">
                                 Confirm password is required
@@ -167,7 +167,7 @@
                     <div id="calculatorNew"></div>
                 </div>
                 <div class="tasks-list-new">
-                    <!-- Remove the empty task box -->
+                  
                 </div>
             </div>
         </div>
@@ -180,7 +180,7 @@
                     <div id="calculatorDone"></div>
                 </div>
                 <div class="tasks-list-done">
-                    <!-- Remove the empty task box -->
+                    
                 </div>
             </div>
         </div>
@@ -197,14 +197,14 @@
                     <input type="checkbox" id="task-isdone" name="task-isdone">
                     Done
                 </label>
-                <button class="btn btn-primary" id="create-task-button" style="width: 300px;">Create</button>
+                <button class="btn btn-primary" id="create-task-button">Create</button>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Модальное окно -->
-<div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;">
+<!-- Modal window -->
+<section class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -212,16 +212,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
             <div class="modal-body" id="modal-body">
-                <div style="margin-bottom: 15px;">
-                    <label for="task-title-update" style="display: block; font-weight: bold;">Title</label>
-                    <input type="text" id="task-title-update" name="task-title-update" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <div class="div-body">
+                    <label class="label-update" for="task-title-update" id="title-update-label">Title</label>
+                    <input type="text" id="task-title-update" name="task-title-update">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="task-description-update" style="display: block; font-weight: bold;">Description</label>
-                    <textarea id="task-description-update" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" rows="4"></textarea>
+                <div class="div-body">
+                    <label class="label-update" for="task-description-update" id="description-update-label">Description</label>
+                    <textarea id="task-description-update" rows="4"></textarea>
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="task-isdone-update" style="font-weight: bold; display: block;">Is it done?</label>
+                <div class="div-body">
+                    <label for="task-isdone-update" class="label-update">Is it done?</label>
                     <input type="checkbox" id="task-isdone-update">
                 </div>
             </div>
@@ -231,20 +231,7 @@
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    function showRegisterForm() {
-        $('.login-page').hide();
-        $('.registration-page').show();
-    }
-    
-    function showLoginForm() {
-        $('.login-page').show();
-        $('.registration-page').hide();
-    }
-
-</script>
+</section>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/site.js"></script>

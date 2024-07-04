@@ -42,7 +42,7 @@ public class TaskRepository: ITaskRepository
         return task;
     }
     
-    public async Task UpdateAsync(string title, string description, string status, DateTime doneAt)
+    public async Task UpdateAsync(string title, string description, string status, DateTime? doneAt)
     {
         var task = await GetByTitleAsync(title);
         
@@ -54,7 +54,7 @@ public class TaskRepository: ITaskRepository
         await _appDbContext.SaveChangesAsync();
     }
     
-    public async Task UpdateAsync(int id, string title, string description, string status, DateTime doneAt)
+    public async Task UpdateAsync(int id, string title, string description, string status, DateTime? doneAt)
     {
         var task = await GetByIdAsync(id);
         
