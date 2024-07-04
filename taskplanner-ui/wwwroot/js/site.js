@@ -113,6 +113,8 @@ $(document).ready(function () {
             },
             success: function () {
                 console.log("Your task has been created successfully");
+                $(".task-name").val("");
+                $(".task-description").val("");
                 fetchData();
             },
             error: function () {
@@ -189,10 +191,6 @@ $(document).ready(function () {
         var password = $("#player-password-registration").val();
         var repeatPassword = $("#player-password-repeat-registration").val();
 
-        if (password != repeatPassword) {
-            console.log("Passwords do not match");
-        }
-
         var account = {
             "email": email,
             "password": password,
@@ -218,6 +216,7 @@ $(document).ready(function () {
     }
 
     function resetPassword() {
+        var forgottenPassword = $("#player-password-forgotten").val();
         var newPassword = $("#player-password-reset").val();
         var confirmPassword = $("#player-password-repeat-reset").val();
         var email = $("#player-email-reset").val();
@@ -226,6 +225,7 @@ $(document).ready(function () {
             console.log("Passwords do not match");
         }
         var account = {
+            "forgottenPassword": forgottenPassword,
             "email": email,
             "newPassword": newPassword,
             "confirmPassword": confirmPassword
@@ -283,12 +283,14 @@ function editTask(task) {
             alert('Data cannot be empty');
         }
 
+        var id = taskDecoded.id;
         var title = $('#task-title-update').val();
         var description = $('#task-description-update').val();
         var isDone = $('#task-isdone-update').prop("checked");
         var status = isDone ? "Done" : "Not done";
 
         var task = {
+            "id": id,
             "title": title,
             "description": description,
             "status": status,
@@ -296,7 +298,7 @@ function editTask(task) {
         };
 
         $.ajax({
-            url: hostApi + "/task",
+            url: hostApi + "/task/" + task.id,
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(task),
@@ -304,6 +306,7 @@ function editTask(task) {
                 withCredentials: true
             },
             success: function () {
+                $('#myModal').modal('hide');
                 console.log("Task was updated successfully");
                 tasksOutput();
             },

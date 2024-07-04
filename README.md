@@ -80,5 +80,5 @@ docker-compose up
 ### Home page
 ![photo_2.jpg](Screenshots/main.jpg)
 ### Edit task page
-![photo_3.jpg](Screenshots/edit-task.jpg)
+![photo_3.jpg](Screenshots/edit-modal.jpg)
 
