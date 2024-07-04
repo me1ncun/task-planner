@@ -60,6 +60,21 @@ public class TaskService: ITaskService
         
         return response;
     }
+
+    public async Task<PutTaskResponse> Update(PutTaskRequest request)
+    {
+        var task = await _taskRepository.GetByIdAsync(request.Id);
+        if (task is null)
+        {
+            throw new NotFoundException();
+        }
+        
+        await _taskRepository.UpdateAsync(request.Id, request.Title, request.Description, request.Status, request.DueDate);
+        
+        var response = _mapper.Map<PutTaskResponse>(task);
+        
+        return response;
+    }
     
     public async Task<DeleteTaskResponse> Delete(DeleteTaskRequest request)
     {

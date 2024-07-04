@@ -54,6 +54,18 @@ public class TaskRepository: ITaskRepository
         await _appDbContext.SaveChangesAsync();
     }
     
+    public async Task UpdateAsync(int id, string title, string description, string status, DateTime doneAt)
+    {
+        var task = await GetByIdAsync(id);
+        
+        task.Title = title;
+        task.Description = description;
+        task.Status = status;
+        task.DoneAt = doneAt;
+        
+        await _appDbContext.SaveChangesAsync();
+    }
+    
     public async Task DeleteAsync(int id)
     {
         var task = await _appDbContext.Tasks.FindAsync(id);

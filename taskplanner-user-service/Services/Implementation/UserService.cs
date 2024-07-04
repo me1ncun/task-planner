@@ -84,6 +84,11 @@ public class UserService: IUserService
             throw new EntityNotFoundException();
         }
         
+        if(HashPasswordHelper.VerifyPassword(request.ForgottenPassword, userExist.Password) != true)
+        {
+            throw new PasswordNotMatchException();
+        }
+        
         if(request.NewPassword != request.ConfirmPassword)
         {
             throw new PasswordNotMatchException();

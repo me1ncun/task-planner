@@ -14,5 +14,6 @@ public class TaskProfile: Profile
         CreateMap<Task, UpdateTaskResponse>();
         CreateMap<Task, DeleteTaskResponse>();
         CreateMap<Task, GetTaskResponse>();
+        CreateMap<Task, PutTaskResponse>();
     }
 }
