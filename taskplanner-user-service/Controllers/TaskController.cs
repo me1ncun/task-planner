@@ -43,30 +43,10 @@ public class TaskController : ControllerBase
 
         return Ok();
     }
-
-    [Authorize]
-    [HttpPut("/task")]
-    public async Task<IActionResult> UpdateTask([FromBody] UpdateTaskRequest request)
-    {
-        try
-        {
-            await _taskService.Update(request);
-
-            return Ok();
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
     
     [Authorize]
     [HttpPut("/task/{id}")]
-    public async Task<IActionResult> UpdateTask([FromRoute] int id, [FromBody] PutTaskRequest request)
+    public async Task<IActionResult> UpdateTask([FromRoute] int id, [FromBody] UpdateTaskRequest request)
     {
         try
         {

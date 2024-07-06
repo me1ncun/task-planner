@@ -260,13 +260,14 @@ function swithTaskStatus(task) {
     var status = taskDecoded.status == "Done" ? "Not done" : "Done";
     
     var task = {
+        "id": taskDecoded.id,
         "title": taskDecoded.title,
         "description": taskDecoded.description,
         "status": status,
     }
 
     $.ajax({
-        url: hostApi + "/task",
+        url: hostApi + "/task/" + task.id,
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(task),

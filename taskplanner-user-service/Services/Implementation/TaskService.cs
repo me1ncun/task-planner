@@ -40,27 +40,8 @@ public class TaskService: ITaskService
         
         return tasksDto;
     }
-    
+
     public async Task<UpdateTaskResponse> Update(UpdateTaskRequest request)
-    {
-        var taskExist = await _taskRepository.GetByTitleAsync(request.Title);
-        if (taskExist is null)
-        {
-            throw new NotFoundException();
-        }
-
-        var task = _mapper.Map<Task>(request);
-        
-        task.DoneAt = DateHelper.GetDateTimeByStatus(request.Status);
-        
-        await _taskRepository.UpdateAsync(task.Title, task.Description, task.Status, task.DoneAt);
-        
-        var response = _mapper.Map<UpdateTaskResponse>(task);
-        
-        return response;
-    }
-
-    public async Task<PutTaskResponse> Update(PutTaskRequest request)
     {
         var taskExist = await _taskRepository.GetByIdAsync(request.Id);
         if (taskExist is null)
@@ -73,7 +54,7 @@ public class TaskService: ITaskService
         
         await _taskRepository.UpdateAsync(task.Id, task.Title, task.Description, task.Status, task.DoneAt);
         
-        var response = _mapper.Map<PutTaskResponse>(task);
+        var response = _mapper.Map<UpdateTaskResponse>(task);
         
         return response;
     }

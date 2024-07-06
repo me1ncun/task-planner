@@ -2,8 +2,10 @@
 
 namespace taskplanner_user_service.DTOs;
 
-public record UpdateTaskRequest(
-    [Required] string Title,
-    [Required] string Description,
-    [Required] string Status
-);
+public class UpdateTaskRequest
+{
+    [Required] public int Id { get; set; }
+    [Required] public string Title { get; set; }
+    [Required] public string Description { get; set; }
+    [Required] public string Status { get; set; }
+}
